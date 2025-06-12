@@ -1,7 +1,7 @@
 // ==UserScript==
 //
 // @name            Alternative Lineages
-// @namespace       roman.is-a.dev
+// @namespace       rman.dev
 //
 // @match           https://infinibrowser.wiki/item*
 //
@@ -12,8 +12,8 @@
 // @downloadURL     https://u.x.is-a.dev/infinite-craft/alt-lineages/index.user.js
 // @updateURL       https://u.x.is-a.dev/infinite-craft/alt-lineages/index.user.js
 //
-// @supportURL      https://roman.is-a.dev/discord
-// @homepageURL     https://roman.is-a.dev/discord
+// @supportURL      https://rman.dev/discord
+// @homepageURL     https://rman.dev/discord
 //
 // @license         MIT
 //
