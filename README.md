@@ -1,3 +1,3 @@
-# u-scripts.pages.dev
+# Userscripts
 
-Userscripts by GameRoMan
+https://userscripts.rman.dev
