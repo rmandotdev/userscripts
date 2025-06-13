@@ -1,19 +1,19 @@
 // ==UserScript==
 //
 // @name            Color proven Elements
-// @namespace       roman.is-a.dev
+// @namespace       rman.dev
 //
 // @match           https://neal.fun/infinite-craft
 //
-// @version         1.3.2.1
+// @version         1.3.2.2
 // @author          GameRoMan
 // @description     Colors elements that are proven to Base Eements in green color
 //
-// @downloadURL     https://u.x.is-a.dev/infinite-craft/color-proven/index.user.js
-// @updateURL       https://u.x.is-a.dev/infinite-craft/color-proven/index.user.js
+// @downloadURL     https://userscripts.rman.dev/infinite-craft/color-proven/index.user.js
+// @updateURL       https://userscripts.rman.dev/infinite-craft/color-proven/index.user.js
 //
-// @supportURL      https://roman.is-a.dev/discord
-// @homepageURL     https://roman.is-a.dev/discord
+// @supportURL      https://rman.dev/discord
+// @homepageURL     https://rman.dev/discord
 //
 // @license         MIT
 //

@@ -1,19 +1,19 @@
 // ==UserScript==
 //
 // @name            Infinihook
-// @namespace       roman.is-a.dev
+// @namespace       rman.dev
 //
 // @match           https://infinibrowser.wiki/item*
 //
-// @version         0.2.1.2.1
+// @version         0.2.1.2.2
 // @author          GameRoMan
 // @description     Sends lineages for elements to your Discord webhook
 //
-// @downloadURL     https://u.x.is-a.dev/infinite-craft/infinihook/index.user.js
-// @updateURL       https://u.x.is-a.dev/infinite-craft/infinihook/index.user.js
+// @downloadURL     https://userscripts.rman.dev/infinite-craft/infinihook/index.user.js
+// @updateURL       https://userscripts.rman.dev/infinite-craft/infinihook/index.user.js
 //
-// @supportURL      https://roman.is-a.dev/discord
-// @homepageURL     https://roman.is-a.dev/discord
+// @supportURL      https://rman.dev/discord
+// @homepageURL     https://rman.dev/discord
 //
 // @license         MIT
 //

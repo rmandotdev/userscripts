@@ -5,12 +5,12 @@
 //
 // @match           https://infinibrowser.wiki/item*
 //
-// @version         4.0.0.1
+// @version         4.0.0.2
 // @author          GameRoMan
 // @description     Adds alternative lineages to InfiniBrowser
 //
-// @downloadURL     https://u.x.is-a.dev/infinite-craft/alt-lineages/index.user.js
-// @updateURL       https://u.x.is-a.dev/infinite-craft/alt-lineages/index.user.js
+// @downloadURL     https://userscripts.rman.dev/infinite-craft/alt-lineages/index.user.js
+// @updateURL       https://userscripts.rman.dev/infinite-craft/alt-lineages/index.user.js
 //
 // @supportURL      https://rman.dev/discord
 // @homepageURL     https://rman.dev/discord

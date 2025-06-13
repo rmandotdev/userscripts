@@ -1,19 +1,19 @@
 // ==UserScript==
 //
 // @name            Resizable minimap
-// @namespace       roman.is-a.dev
+// @namespace       rman.dev
 //
 // @match           https://neal.fun/internet-roadtrip/*
 //
-// @version         1.0.1
+// @version         1.0.2
 // @author          GameRoMan
 // @description     Allows you to resize the minimap to any size you want!
 //
-// @downloadURL     https://u.x.is-a.dev/internet-roadtrip/resizable-minimap/index.user.js
-// @updateURL       https://u.x.is-a.dev/internet-roadtrip/resizable-minimap/index.user.js
+// @downloadURL     https://userscripts.rman.dev/internet-roadtrip/resizable-minimap/index.user.js
+// @updateURL       https://userscripts.rman.dev/internet-roadtrip/resizable-minimap/index.user.js
 //
-// @supportURL      https://roman.is-a.dev/discord
-// @homepageURL     https://roman.is-a.dev/discord
+// @supportURL      https://rman.dev/discord
+// @homepageURL     https://rman.dev/discord
 //
 // @license         MIT
 //
