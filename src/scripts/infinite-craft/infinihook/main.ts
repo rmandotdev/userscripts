@@ -1,28 +1,7 @@
-// ==UserScript==
-//
-// @name            Infinihook
-// @namespace       rman.dev
-//
-// @match           https://infinibrowser.wiki/item*
-//
-// @version         0.2.1.2.2
-// @author          GameRoMan
-// @description     Sends lineages for elements to your Discord webhook
-//
-// @downloadURL     https://userscripts.rman.dev/infinite-craft/infinihook/index.user.js
-// @updateURL       https://userscripts.rman.dev/infinite-craft/infinihook/index.user.js
-//
-// @supportURL      https://rman.dev/discord
-// @homepageURL     https://rman.dev/discord
-//
-// @license         MIT
-//
-// ==/UserScript==
-
 (function () {
   // ---------- Webhook setup functions ----------
 
-  function encodeWebhook(webhook) {
+  function encodeWebhook(webhook: string) {
     const base64Encoded = btoa(webhook);
     const shift = 3;
 
@@ -36,7 +15,7 @@
     return btoa(webhookEncoded);
   }
 
-  function decodeWebhook(webhookEncoded) {
+  function decodeWebhook(webhookEncoded: string) {
     const base64Decoded = atob(webhookEncoded);
     const shift = 3;
 
@@ -68,7 +47,7 @@
     const discordButtonImageUrl =
       "https://img.icons8.com/ios7/512/FFFFFF/discord-logo.png";
 
-    const buttonMenu = document.querySelector(".ibuttons");
+    const buttonMenu = document.querySelector(".ibuttons") as HTMLDivElement;
 
     const discordButton = document.createElement("button");
 
@@ -123,7 +102,11 @@
 
   // ---------- Message handling ----------
 
-  async function sendMessage(webhookUrl, message, alertForSuccess = true) {
+  async function sendMessage(
+    webhookUrl: string,
+    message: string,
+    alertForSuccess = true
+  ) {
     try {
       const response = await fetch(webhookUrl, {
         method: "POST",
@@ -147,7 +130,7 @@
     }
   }
 
-  async function handleBigLineage(webhookUrl, stepsJson) {
+  async function handleBigLineage(webhookUrl: string, stepsJson) {
     const steps = convertToSteps(stepsJson);
     const messages = splitIntoSeparateMessage(steps);
 
@@ -175,12 +158,12 @@
   }
 
   function splitIntoSeparateMessage(
-    steps,
+    steps: string[],
     maxLength = 2000,
     joinCharacterLength = 3
   ) {
-    const messages = [];
-    let currentArray = [];
+    const messages: string[][] = [];
+    let currentArray: string[] = [];
     let currentLength = 0;
 
     for (const step of steps) {
@@ -223,7 +206,7 @@
     }
   }
 
-  async function getLineage(elementUrl) {
+  async function getLineage(elementUrl: string) {
     try {
       const response = await fetch(elementUrl, {
         method: "GET",
@@ -254,22 +237,22 @@
     return steps;
   }
 
-  function convertToMessage(steps) {
+  function convertToMessage(steps: string[]) {
     return steps.join("\n");
   }
 
-  function addStepCount(message, steps) {
+  function addStepCount(message: string, steps: string[]) {
     return `${message}  // ${steps.length} :: `;
   }
 
-  function addHeader(message, stepsJson) {
+  function addHeader(message: string, stepsJson) {
     const elementUrl = `<${window.location.href}>`;
     const lastElementId = stepsJson[stepsJson.length - 1].result.id;
 
     return `Recipe for [\`${lastElementId}\`](${elementUrl})\n${message}`;
   }
 
-  function wrapMessage(message) {
+  function wrapMessage(message: string) {
     return `
 \`\`\`adoc
 ${message}

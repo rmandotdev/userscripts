@@ -1,28 +1,7 @@
-// ==UserScript==
-//
-// @name            Color proven Elements
-// @namespace       rman.dev
-//
-// @match           https://neal.fun/infinite-craft
-//
-// @version         1.3.2.2
-// @author          GameRoMan
-// @description     Colors elements that are proven to Base Eements in green color
-//
-// @downloadURL     https://userscripts.rman.dev/infinite-craft/color-proven/index.user.js
-// @updateURL       https://userscripts.rman.dev/infinite-craft/color-proven/index.user.js
-//
-// @supportURL      https://rman.dev/discord
-// @homepageURL     https://rman.dev/discord
-//
-// @license         MIT
-//
-// ==/UserScript==
-
 (function () {
   let mapElements = {};
 
-  async function load_data(location) {
+  async function load_data(location: "proven" | "disproven") {
     const response = await fetch(
       `https://glcdn.githack.com/gameroman/infinite-craft/-/raw/main/base-elements/${location}.json`,
       { cache: "no-store" }
@@ -30,7 +9,9 @@
     return await response.json();
   }
 
-  async function colorElements(green, red) {
+  const __VUE__ = document.querySelector(".container").__vue__;
+
+  async function colorElements(green: string[], red: string[]) {
     const green_color = "#00cc1f"; // Color for Proven Elements
     const red_color = "#ff1c1c"; // Color for Disroven Elements
 
@@ -47,18 +28,14 @@
         for (let elem of green) {
           mapElements[elem.toLowerCase()] = { color: green_color };
 
-          let elemNode = document
-            .querySelector(".container")
-            .__vue__._data.elements.find(
-              (x) => x.text.toLowerCase() == elem.toLowerCase()
-            );
+          let elemNode = __VUE__._data.elements.find(
+            (x) => x.text.toLowerCase() == elem.toLowerCase()
+          );
           if (elemNode) {
             elemNode.color = green_color;
-            let instancesGreen = document
-              .querySelector(".container")
-              .__vue__._data.instances.filter(
-                (x) => x.text.toLowerCase() == elem.toLowerCase()
-              );
+            let instancesGreen = __VUE__._data.instances.filter(
+              (x) => x.text.toLowerCase() == elem.toLowerCase()
+            );
             instancesGreen.forEach((x) => {
               if (x.elem) x.elem.style.color = elemNode.color;
             });
@@ -74,16 +51,12 @@
         for (let elem of red) {
           mapElements[elem.toLowerCase()] = { color: red_color };
 
-          let elemNode = document
-            .querySelector(".container")
-            .__vue__._data.elements.find((x) => x.text == elem);
+          let elemNode = __VUE__._data.elements.find((x) => x.text == elem);
           if (elemNode) {
             elemNode.color = red_color;
-            let instancesRed = document
-              .querySelector(".container")
-              .__vue__._data.instances.filter(
-                (x) => x.text.toLowerCase() == elem.toLowerCase()
-              );
+            let instancesRed = __VUE__._data.instances.filter(
+              (x) => x.text.toLowerCase() == elem.toLowerCase()
+            );
             instancesRed.forEach((x) => {
               if (x.elem) x.elem.style.color = elemNode.color;
             });
@@ -114,22 +87,24 @@
               node.classList.contains("instance") &&
               node.querySelector(".instance-emoji")
             ) {
-              let instance = document
-                .querySelector(".container")
-                .__vue__._data.instances.find((x) => x.elem == node);
+              let instance = __VUE__._data.instances.find(
+                (x) => x.elem == node
+              );
               if (instance) {
                 let elem = mapElements[instance.text.toLowerCase()];
                 if (elem && elem.color) {
                   node.style.color = elem.color;
                 }
               }
+            } else {
             }
           }
+        } else {
         }
       }
     });
 
-    instanceObserver.observe(document.getElementsByClassName("instances")[0], {
+    instanceObserver.observe(document.getElementsByClassName("instances")[0]!, {
       childList: true,
       subtree: true,
     });

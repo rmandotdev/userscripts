@@ -1,30 +1,11 @@
-// ==UserScript==
-//
-// @name            Resizable minimap
-// @namespace       rman.dev
-//
-// @match           https://neal.fun/internet-roadtrip/*
-//
-// @version         1.0.2
-// @author          GameRoMan
-// @description     Allows you to resize the minimap to any size you want!
-//
-// @downloadURL     https://userscripts.rman.dev/internet-roadtrip/resizable-minimap/index.user.js
-// @updateURL       https://userscripts.rman.dev/internet-roadtrip/resizable-minimap/index.user.js
-//
-// @supportURL      https://rman.dev/discord
-// @homepageURL     https://rman.dev/discord
-//
-// @license         MIT
-//
-// ==/UserScript==
-
 (function () {
   "use strict";
 
-  const miniMap = document.getElementById("mini-map");
+  const miniMap = document.getElementById("mini-map") as HTMLDivElement;
 
-  const expandButton = document.querySelector(".expand-button");
+  const expandButton = document.querySelector(
+    ".expand-button"
+  ) as HTMLDivElement;
   expandButton.style.display = "none";
 
   const resizer = document.createElement("div");
@@ -42,7 +23,7 @@
   miniMap.appendChild(resizer);
 
   let isResizing = false;
-  let lastX, lastY;
+  let lastX: number, lastY: number;
 
   resizer.addEventListener("mousedown", (e) => {
     isResizing = true;

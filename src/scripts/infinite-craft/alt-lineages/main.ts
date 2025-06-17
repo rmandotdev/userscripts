@@ -1,31 +1,12 @@
-// ==UserScript==
-//
-// @name            Alternative Lineages
-// @namespace       rman.dev
-//
-// @match           https://infinibrowser.wiki/item*
-//
-// @version         4.0.0.2
-// @author          GameRoMan
-// @description     Adds alternative lineages to InfiniBrowser
-//
-// @downloadURL     https://userscripts.rman.dev/infinite-craft/alt-lineages/index.user.js
-// @updateURL       https://userscripts.rman.dev/infinite-craft/alt-lineages/index.user.js
-//
-// @supportURL      https://rman.dev/discord
-// @homepageURL     https://rman.dev/discord
-//
-// @license         MIT
-//
-// ==/UserScript==
-
 (function () {
-  const lineagesFile = "both";
+  type LineagesFileType = "verified" | "submitted" | "both";
+
+  const lineagesFile = "both" as LineagesFileType;
   // 'verified' - Verified lineages only
   // 'submitted' - User-submitted lineages only
   // 'both' - Both verified and user-submitted
 
-  async function loadLineages(type) {
+  async function loadLineages(type: LineagesFileType) {
     const urlParams = new URLSearchParams(window.location.search);
     const itemId =
       urlParams.get("id") || window.location.pathname.split("/")[2];
@@ -38,20 +19,23 @@
   }
 
   async function submitLineage() {
-    const statusText = document.getElementById("status-text");
+    const statusText = document.getElementById(
+      "status-text"
+    ) as HTMLParagraphElement;
     statusText.textContent = "Loading...";
     statusText.style.color = "#777777";
 
-    const input = document.getElementById("lineage-input").value;
+    const input = (document.getElementById("lineage-input") as HTMLInputElement)
+      .value;
     if (!input.startsWith("https://infinibrowser.wiki/item/01")) {
-      document.getElementById("status-text").textContent = "Invalid input";
+      statusText.textContent = "Invalid input";
       statusText.style.color = "#FFAAAA";
       return;
     }
 
-    const lineageId = input.split("https://infinibrowser.wiki/item/")[1];
+    const lineageId = input.split("https://infinibrowser.wiki/item/")[1]!;
     if (lineageId.length != 26) {
-      document.getElementById("status-text").textContent = "Invalid input";
+      statusText.textContent = "Invalid input";
       statusText.style.color = "#FFAAAA";
       return;
     }
@@ -76,7 +60,7 @@
       return;
     }
 
-    document.getElementById("status-text").textContent = "Processing...";
+    statusText.textContent = "Processing...";
     statusText.style.color = "#777777";
 
     fetch(
@@ -217,7 +201,7 @@ width: 475px;
 
     const statusText = document.createElement("p");
     statusText.id = "status-text";
-    statusText.style.margin = 0;
+    statusText.style.margin = "0";
     modal.appendChild(statusText);
 
     const submitButton = document.createElement("button");
@@ -230,10 +214,12 @@ width: 475px;
     document.querySelector("body > main").appendChild(modalWrapper);
   }
 
-  function init(lineages) {
+  type Lineage = { steps: number; lineageId: string };
+
+  function init(lineages: Lineage[]) {
     const altLineagesButton = document.createElement("button");
     altLineagesButton.className = "navbtn";
-    altLineagesButton.dataset.id = "alternative_lineages_section";
+    altLineagesButton.dataset["id"] = "alternative_lineages_section";
     altLineagesButton.textContent = `Alternative Lineages (${lineages.length})`;
     document.querySelector("div.nav").appendChild(altLineagesButton);
 

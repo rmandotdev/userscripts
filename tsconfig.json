@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "ES2020",
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
     "outDir": "./dist",
     "rootDir": "./src",
+
+    "baseUrl": ".", // Base directory for resolving non-relative imports
+    "paths": {
+      "build/*": ["./src/build/*"] // Map "build/*" to "./build/*"
+    },
 
     // Best practices
     "strict": true,
