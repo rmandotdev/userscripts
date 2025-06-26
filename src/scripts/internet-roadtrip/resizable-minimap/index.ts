@@ -1,6 +1,4 @@
 (function () {
-  "use strict";
-
   const miniMap = document.getElementById("mini-map") as HTMLDivElement;
 
   const expandButton = document.querySelector(

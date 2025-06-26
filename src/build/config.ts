@@ -1,7 +1,5 @@
 import * as path from "path";
 
-import "@violentmonkey/types";
-
 export type HeaderConfig = Partial<VMScriptGMInfoScriptMeta> & {
   name: string;
   match: string | string[];
@@ -16,6 +14,10 @@ const defaultHeader: Partial<HeaderConfig> = {
   homepageURL: "https://rman.dev/discord",
   license: "MIT",
 };
+
+export function defineConfig(config: { headers: HeaderConfig }): HeaderConfig {
+  return config.headers;
+}
 
 export function inferHeaderFields(
   scriptDir: string,

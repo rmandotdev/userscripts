@@ -11,6 +11,8 @@
       "build/*": ["./src/build/*"] // Map "build/*" to "./build/*"
     },
 
+    "types": ["infinite-craft/types", "@violentmonkey/types"],
+
     // Best practices
     "strict": true,
     "skipLibCheck": true,

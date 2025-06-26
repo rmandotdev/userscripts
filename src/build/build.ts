@@ -2,11 +2,13 @@ import { build } from "bun";
 import * as path from "path";
 import * as fs from "fs/promises";
 import { pathToFileURL, fileURLToPath } from "url";
-import { serializeHeader } from "./headerTypes";
+import { serializeHeader, type HeaderConfig } from "./config";
 
 const SRC_USERSCRIPTS = fileURLToPath(new URL("../scripts/", import.meta.url));
 const SRC_PUBLIC = fileURLToPath(new URL("../public/", import.meta.url));
 const DIST = fileURLToPath(new URL("../../dist/", import.meta.url));
+
+const CONFIG_FILE_NAME = "config.ts";
 
 // Parse CLI args for --verbose flag
 const verbose = process.argv.includes("--verbose");
@@ -52,20 +54,20 @@ async function copyDir(src: string, dest: string) {
 }
 
 async function buildUserScript(dir: string) {
-  const headerPath = path.join(dir, "headers.config.mts");
+  const configPath = path.join(dir, CONFIG_FILE_NAME);
   const mainTSPath = (await fs.readdir(dir)).find(
-    (f) => f.startsWith("main.") && (f.endsWith(".ts") || f.endsWith(".tsx"))
+    (f) => f.startsWith("index.") && (f.endsWith(".ts") || f.endsWith(".tsx"))
   );
   if (!mainTSPath) {
-    console.warn(`⚠️ No main.ts[x] found in ${dir}, skipping`);
+    console.warn(`⚠️ No index.ts[x] found in ${dir}, skipping`);
     return;
   }
 
-  console.log(`🚧 Building userscript in: ${dir}`);
+  logVerbose(`🚧 Building userscript in: ${dir}`);
 
   // Import the header config (default export)
-  const headerModule = await import(pathToFileURL(headerPath).href);
-  const headerConfig = headerModule.default;
+  const headerModule = await import(pathToFileURL(configPath).href);
+  const headerConfig: HeaderConfig = headerModule.default;
 
   // Serialize header with scriptDir and rootDir
   const header = serializeHeader(headerConfig, {
@@ -84,7 +86,7 @@ async function buildUserScript(dir: string) {
     target: "browser",
     sourcemap: "none",
     format: "esm",
-    minify: true,
+    minify: false,
     splitting: false,
     naming: { entry: "main.js" },
   });
@@ -97,14 +99,14 @@ async function buildUserScript(dir: string) {
   const bundledFile = path.join(outDir, "main.js");
   const bundledCode = await fs.readFile(bundledFile, "utf-8");
 
-  const fullCode = header + bundledCode;
+  const fullCode = `${header}\n${bundledCode}`;
 
   const finalFile = path.join(outDir, "index.user.js");
   await fs.writeFile(finalFile, fullCode, "utf-8");
 
   await fs.unlink(bundledFile);
 
-  console.log(`✅ Built userscript: ${finalFile}`);
+  logVerbose(`✅ Built userscript: ${finalFile}`);
 }
 
 async function buildAll() {
@@ -121,17 +123,17 @@ async function buildAll() {
       const fullPath = path.join(dir, entry.name);
       if (entry.isDirectory()) {
         result = result.concat(await findUserscriptDirs(fullPath));
-      } else if (entry.name === "headers.config.mts") {
+      } else if (entry.name === CONFIG_FILE_NAME) {
         result.push(dir);
       }
     }
     return result;
   }
 
-  console.log(`\n🔍 Searching for userscripts in ${SRC_USERSCRIPTS}...`);
+  logVerbose(`\n🔍 Searching for userscripts in ${SRC_USERSCRIPTS}...`);
   const userscriptDirs = await findUserscriptDirs(SRC_USERSCRIPTS);
   if (userscriptDirs.length === 0) {
-    console.warn("⚠️ No userscripts found in src/scripts");
+    console.warn(`⚠️ No userscripts found in ${SRC_USERSCRIPTS}`);
   } else {
     console.log(`🔎 Found ${userscriptDirs.length} userscript(s).`);
   }

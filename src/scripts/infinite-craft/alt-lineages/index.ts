@@ -1,10 +1,11 @@
 (function () {
   type LineagesFileType = "verified" | "submitted" | "both";
+  type Lineage = { steps: number; lineageId: string };
 
-  const lineagesFile = "both" as LineagesFileType;
-  // 'verified' - Verified lineages only
-  // 'submitted' - User-submitted lineages only
-  // 'both' - Both verified and user-submitted
+  //! 'verified' - Verified lineages only
+  //! 'submitted' - User-submitted lineages only
+  //! 'both' - Both verified and user-submitted
+  const lineagesFile: LineagesFileType = "both";
 
   async function loadLineages(type: LineagesFileType) {
     const urlParams = new URLSearchParams(window.location.search);
@@ -14,7 +15,7 @@
     return fetch(
       `https://ib.gameroman.workers.dev/alt-lineages/get?type=${type}&id=${itemId}`
     )
-      .then((res) => res.json())
+      .then((res) => res.json() as Promise<Lineage[]>)
       .catch(() => []);
   }
 
@@ -44,7 +45,7 @@
     let storedData = JSON.parse(
       localStorage.getItem("lineageData") ||
         '{"submittedLineages": [], "errors": {}}'
-    );
+    ) as { submittedLineages: string[]; errors: { [key: string]: string } };
 
     // Check if the lineage has already been submitted
     if (storedData.submittedLineages.includes(lineageId)) {
@@ -67,11 +68,14 @@
       `https://ib.gameroman.workers.dev/alt-lineages/submit?id=${encodeURIComponent(
         lineageId
       )}`,
-      {
-        method: "POST",
-      }
+      { method: "POST" }
     )
-      .then((response) => response.json())
+      .then(
+        (response) =>
+          response.json() as Promise<
+            { OK: false; error: string } | { OK: true; message: string }
+          >
+      )
       .then((data) => {
         if (data.OK) {
           statusText.textContent = data.message;
@@ -100,7 +104,7 @@
   }
 
   function closeModal() {
-    document.getElementById("modal_wrapper").remove();
+    (document.getElementById("modal_wrapper") as HTMLElement).remove();
   }
 
   function openLineageModal() {
@@ -211,17 +215,19 @@ width: 475px;
     modal.appendChild(submitButton);
 
     modalWrapper.appendChild(modal);
-    document.querySelector("body > main").appendChild(modalWrapper);
+    (document.querySelector("body > main") as HTMLElement).appendChild(
+      modalWrapper
+    );
   }
-
-  type Lineage = { steps: number; lineageId: string };
 
   function init(lineages: Lineage[]) {
     const altLineagesButton = document.createElement("button");
     altLineagesButton.className = "navbtn";
     altLineagesButton.dataset["id"] = "alternative_lineages_section";
     altLineagesButton.textContent = `Alternative Lineages (${lineages.length})`;
-    document.querySelector("div.nav").appendChild(altLineagesButton);
+    (document.querySelector("div.nav") as HTMLElement).appendChild(
+      altLineagesButton
+    );
 
     const altLineagesSection = document.createElement("section");
     altLineagesSection.id = "alternative_lineages_section";
@@ -274,7 +280,9 @@ width: 475px;
       altLineagesSection.appendChild(noAltLineagesSpan);
     }
 
-    document.querySelector("body > main").appendChild(altLineagesSection);
+    (document.querySelector("body > main") as HTMLElement).appendChild(
+      altLineagesSection
+    );
   }
 
   window.addEventListener("load", async () => {
