@@ -5,7 +5,7 @@
     convert(input: string): string;
     elementStorageSet: Set<string>;
     revivingProgress(): Promise<void>;
-    emojiMap: Map<string, IC_VUE_CraftApiResponse>;
+    emojiMap: Map<string, IC_Container_VUE_CraftApiResponse>;
     revive(input: string): Promise<void>;
   }
 
@@ -569,11 +569,11 @@
           start: `#${elem}`,
           tools: [
             ...tools.removeHashtag,
-            elem[0],
+            elem[0]!,
             elem.slice(0, 2),
             elem.slice(0, 3),
             elem.slice(0, 4),
-            elem.split(" ")[0],
+            elem.split(" ")[0]!,
           ],
         },
         { start: `#${elem}`, goal: `Mr. ${elem}`, tools: [...tools.prependMr] },
@@ -594,105 +594,11 @@
   const recipesIng: Map<string, string> = new Map();
   const recipesRes: Map<string, [string, string][]> = new Map();
   // const aliveSet = new Set();   // elements from results or ingredients of recipes (not implementing because zombies mess this up sometimes :(( )
-  const emojiMap: Map<string, IC_VUE_CraftApiResponse> = new Map();
+  const emojiMap: Map<string, IC_Container_VUE_CraftApiResponse> = new Map();
   const failedSpellingsMap: Map<string, string[]> = new Map();
   let elementStorageSet: Set<string> = new Set();
 
   const processedElementsList: string[] = [];
-
-  window.addEventListener("load", async () => {
-    // == Patched by GameRoMan ==
-
-    while (!icWindow.IC) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-    const items = icWindow.IC.getItems();
-
-    elementStorageSet = new Set(items.map((x) => x.text));
-    icWindow.elementStorageSet = elementStorageSet;
-
-    items.forEach((item) => {
-      emojiMap.set(item.text, {
-        text: item.text,
-        emoji: item.emoji,
-        discovery: item.discovery ?? false,
-      });
-    });
-
-    console.log(emojiMap.size);
-    icWindow.emojiMap = emojiMap;
-    // == Patched by GameRoMan ==
-
-    icWindow.revive = async function (input: string) {
-      const elems = input
-        .split("\n")
-        .filter(Boolean)
-        .map((x) => x.trim());
-      console.log("Revive called with words:", elems);
-      console.time();
-
-      await reviveElements(elems);
-
-      // == Patched by GameRoMan ==
-      const success = elems.reduce(
-        (acc, line) => (resultExists(line) ? acc + line + "\n" : acc),
-        ""
-      );
-      const fail = elems.reduce(
-        (acc, line) => (!resultExists(line) ? acc + line + "\n" : acc),
-        ""
-      );
-
-      console.log(`✅ Successfully Revived Words:\n${success}`);
-      console.log(`❌ Failed to Revive Words:\n${fail}`);
-
-      await sendMessage(
-        "https://webhooks.gameroman.workers.dev/send/kit",
-        `✅ Successfully Revived Words:\n${success}`.substr(0, 1900)
-      );
-      await sendMessage(
-        "https://webhooks.gameroman.workers.dev/send/kit",
-        `❌ Failed to Revive Words:\n${fail}`.substr(0, 1900)
-      );
-      // == Patched by GameRoMan ==
-
-      icWindow.revivingProgress();
-      console.timeEnd();
-    };
-
-    icWindow.revivingProgress = async function () {
-      const groupLineages = ["%cLineages", "background: purple; color: white"];
-      const lineageMessage = processedElementsList
-        .filter((x) => resultExists(x))
-        .map((x) => `Revived: ${x}${makeLineage(x)}`)
-        .join("\n\n");
-      console.groupCollapsed(...groupLineages);
-      if (lineageMessage) console.log(lineageMessage);
-      console.groupEnd(...groupLineages);
-
-      const successMessage = processedElementsList.filter((x) =>
-        resultExists(x)
-      );
-      const groupSuccess = [
-        `%cSuccessfully Revived Elements: (${successMessage.length})`,
-        "background: green; color: white",
-      ];
-      console.groupCollapsed(...groupSuccess);
-      if (successMessage.length > 0) console.log(successMessage.join("\n"));
-      console.groupEnd(...groupSuccess);
-
-      const failedMessage = processedElementsList.filter(
-        (x) => !resultExists(x)
-      );
-      const groupFailed = [
-        `%cFailed to Revive Elements: (${failedMessage.length})`,
-        "background: red; color: white",
-      ];
-      console.groupCollapsed(...groupFailed);
-      if (failedMessage.length > 0) console.log(failedMessage.join("\n"));
-      console.groupEnd(...groupFailed);
-    };
-  });
 
   async function reviveElements(elements: string[]) {
     // parallelizing stuff (very gamer)
@@ -770,7 +676,7 @@
     for (let i = 0; i < element.length; i++) {
       const char = element[i]!; // Current character
       if (spacingChars.has(char) || i === 0) {
-        currentWordStart = i + (i !== 0);
+        currentWordStart = i + Number(i !== 0);
         currentWordEnd =
           i +
           1 +
@@ -865,7 +771,7 @@
       const start = deSpellStep.start
         ? (deSpellStep.start as string)
         : currentElement;
-      const goal = deSpellStep.goal ? (deSpellStep.goal as string) : undefined;
+      const goal = deSpellStep.goal ? (deSpellStep.goal as string) : null;
 
       if (resultExists(start)) {
         if (logMessages)
@@ -945,8 +851,8 @@
   async function tryCombine(
     inputs1: string[],
     inputs2: string[],
-    expected: string[]
-  ) {
+    expected: (string | null)[]
+  ): Promise<string | boolean> {
     for (let i = 0; i < expected.length; i++) {
       if (resultExists(expected[i]!)) return true;
       expected[i] = nealCase(expected[i]!);
@@ -970,9 +876,12 @@
     new Promise((resolve) => setTimeout(resolve, ms));
 
   let lastCombination = Date.now();
-  const currentRequests: Map<string, string> = new Map(); // no duplicate requests
+  const currentRequests: Map<string, Promise<string | undefined>> = new Map(); // no duplicate requests
 
-  async function combine(first: string, second: string) {
+  async function combine(
+    first: string,
+    second: string
+  ): Promise<string | undefined> {
     // console.log("combine", first, "+", second);
     if (!first || !second) return;
     if (first.length > 30 || second.length > 30) return;
@@ -985,7 +894,7 @@
 
     // if recipe is already requested
     if (currentRequests.has(combString)) {
-      return currentRequests.get(combString);
+      return currentRequests.get(combString)!;
     }
 
     const promise = (async () => {
@@ -1042,7 +951,7 @@
     const request = indexedDB.open("infinite-craft");
 
     request.onsuccess = (event) => {
-      const db = event.target.result;
+      const db = (event.target as typeof request).result;
       const transaction = db.transaction("items", "readwrite");
       const store = transaction.objectStore("items");
       store.put(toPush);
@@ -1065,7 +974,7 @@
 
     const items = __VUE__.items;
 
-    const recipesForElement = [];
+    const recipesForElement: [number, number][] = [];
 
     for (const recipe of recipesRes.get(element.text)!) {
       let firstElementId = items.findIndex((x) => x.text === recipe[0]);
@@ -1101,7 +1010,7 @@
     const request = indexedDB.open("infinite-craft");
 
     request.onsuccess = (event) => {
-      const db = event.target.result;
+      const db = (event.target as typeof request).result;
       const transaction = db.transaction("items", "readwrite");
       const store = transaction.objectStore("items");
       store.put(toPush);
@@ -1145,4 +1054,98 @@
     nealCasedLookup.set(input, result);
     return result;
   }
+
+  window.addEventListener("load", async () => {
+    // == Patched by GameRoMan ==
+
+    while (!icWindow.IC) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    const items = icWindow.IC.getItems();
+
+    elementStorageSet = new Set(items.map((x) => x.text));
+    icWindow.elementStorageSet = elementStorageSet;
+
+    items.forEach((item) => {
+      emojiMap.set(item.text, {
+        text: item.text,
+        emoji: item.emoji,
+        discovery: item.discovery ?? false,
+      });
+    });
+
+    console.log(emojiMap.size);
+    icWindow.emojiMap = emojiMap;
+    // == Patched by GameRoMan ==
+
+    icWindow.revive = async function (input: string) {
+      const elems = input
+        .split("\n")
+        .filter(Boolean)
+        .map((x) => x.trim());
+      console.log("Revive called with words:", elems);
+      console.time();
+
+      await reviveElements(elems);
+
+      // == Patched by GameRoMan ==
+      const success = elems.reduce(
+        (acc, line) => (resultExists(line) ? acc + line + "\n" : acc),
+        ""
+      );
+      const fail = elems.reduce(
+        (acc, line) => (!resultExists(line) ? acc + line + "\n" : acc),
+        ""
+      );
+
+      console.log(`✅ Successfully Revived Words:\n${success}`);
+      console.log(`❌ Failed to Revive Words:\n${fail}`);
+
+      await sendMessage(
+        "https://webhooks.gameroman.workers.dev/send/kit",
+        `✅ Successfully Revived Words:\n${success}`.substr(0, 1900)
+      );
+      await sendMessage(
+        "https://webhooks.gameroman.workers.dev/send/kit",
+        `❌ Failed to Revive Words:\n${fail}`.substr(0, 1900)
+      );
+      // == Patched by GameRoMan ==
+
+      icWindow.revivingProgress();
+      console.timeEnd();
+    };
+
+    icWindow.revivingProgress = async function () {
+      const groupLineages = ["%cLineages", "background: purple; color: white"];
+      const lineageMessage = processedElementsList
+        .filter((x) => resultExists(x))
+        .map((x) => `Revived: ${x}${makeLineage(x)}`)
+        .join("\n\n");
+      console.groupCollapsed(...groupLineages);
+      if (lineageMessage) console.log(lineageMessage);
+      console.groupEnd(...groupLineages);
+
+      const successMessage = processedElementsList.filter((x) =>
+        resultExists(x)
+      );
+      const groupSuccess = [
+        `%cSuccessfully Revived Elements: (${successMessage.length})`,
+        "background: green; color: white",
+      ];
+      console.groupCollapsed(...groupSuccess);
+      if (successMessage.length > 0) console.log(successMessage.join("\n"));
+      console.groupEnd(...groupSuccess);
+
+      const failedMessage = processedElementsList.filter(
+        (x) => !resultExists(x)
+      );
+      const groupFailed = [
+        `%cFailed to Revive Elements: (${failedMessage.length})`,
+        "background: red; color: white",
+      ];
+      console.groupCollapsed(...groupFailed);
+      if (failedMessage.length > 0) console.log(failedMessage.join("\n"));
+      console.groupEnd(...groupFailed);
+    };
+  });
 })();

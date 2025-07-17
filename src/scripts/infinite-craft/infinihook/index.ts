@@ -1,104 +1,22 @@
+import { LineageType, LineageDataType } from "infinibrowser";
+
 (function () {
   // ---------- Webhook setup functions ----------
 
-  function encodeWebhook(webhook: string) {
-    const base64Encoded = btoa(webhook);
-    const shift = 3;
-
-    let webhookEncoded = "";
-
-    for (let i = 0; i < base64Encoded.length; i++) {
-      const charCode = base64Encoded.charCodeAt(i);
-      webhookEncoded += String.fromCharCode(charCode + shift);
-    }
-
-    return btoa(webhookEncoded);
-  }
-
-  function decodeWebhook(webhookEncoded: string) {
-    const base64Decoded = atob(webhookEncoded);
-    const shift = 3;
-
-    let webhook = "";
-
-    for (let i = 0; i < base64Decoded.length; i++) {
-      const charCode = base64Decoded.charCodeAt(i);
-      webhook += String.fromCharCode(charCode - shift);
-    }
-
-    return atob(webhook);
-  }
-
-  function newWebhook() {
+  async function newWebhook() {
     const webhook = prompt("Enter webhook url");
-    localStorage.setItem("webhookEncoded", encodeWebhook(webhook));
+    if (!webhook) return newWebhook();
+    await GM.setValue("webhook", webhook);
+    return webhook;
   }
 
-  function getWebhook() {
-    const webhook = localStorage.getItem("webhookEncoded");
-    return decodeWebhook(webhook);
+  async function getWebhook() {
+    const webhook = (await GM.getValue("webhook")) as string | undefined;
+    if (!webhook) return newWebhook();
+    return webhook;
   }
 
   // ---------- Webhook setup functions ----------
-
-  // ---------- Discord button setup functions ----------
-
-  function setupDiscordButton() {
-    const discordButtonImageUrl =
-      "https://img.icons8.com/ios7/512/FFFFFF/discord-logo.png";
-
-    const buttonMenu = document.querySelector(".ibuttons") as HTMLDivElement;
-
-    const discordButton = document.createElement("button");
-
-    const discordButtonImage = document.createElement("img");
-    discordButtonImage.id = "discord-button-image";
-    discordButtonImage.src = discordButtonImageUrl;
-    discordButtonImage.draggable = false;
-
-    discordButton.appendChild(discordButtonImage);
-
-    buttonMenu.appendChild(discordButton);
-
-    discordButton.addEventListener("click", handleDiscordButtonClick);
-  }
-
-  async function handleDiscordButtonClick() {
-    if (!localStorage.getItem("webhookEncoded")) {
-      newWebhook();
-    }
-
-    const webhook = getWebhook();
-
-    const elementUrl = getElementUrl();
-    const data = await getLineage(elementUrl);
-
-    if (data) {
-      const stepsJson = data["steps"];
-
-      const steps = convertToSteps(stepsJson);
-      const message = convertToMessage(steps);
-
-      const messageWithLengthCount = addStepCount(message, steps);
-      const wrappedMessage = wrapMessage(messageWithLengthCount);
-      const formattedMessage = addHeader(wrappedMessage, stepsJson);
-
-      if (formattedMessage.length <= 2000) {
-        await sendMessage(webhook, formattedMessage);
-      } else {
-        const sendBigMessage = confirm(
-          `Lineage is too big\nMax: 2000 characters\nLineage: ${
-            formattedMessage.length
-          } characters\n\nDo you want the lineage to get sent in ${Math.ceil(
-            formattedMessage.length / 2000
-          )} separate messages?`
-        );
-        if (sendBigMessage) handleBigLineage(webhook, stepsJson);
-      }
-    }
-  }
-
-  // ---------- Discord button setup functions ----------
 
   // ---------- Message handling ----------
 
@@ -130,12 +48,46 @@
     }
   }
 
-  async function handleBigLineage(webhookUrl: string, stepsJson) {
+  function convertToSteps(stepsJson: LineageType) {
+    const steps = [];
+
+    for (const item of stepsJson) {
+      const { a, b, result } = item;
+      steps.push(`${a.id} + ${b.id} = ${result.id}`);
+    }
+
+    return steps;
+  }
+
+  function convertToMessage(steps: string[]) {
+    return steps.join("\n");
+  }
+
+  function addStepCount(message: string, steps: string[]) {
+    return `${message}  // ${steps.length} :: `;
+  }
+
+  function addHeader(message: string, stepsJson: LineageType) {
+    const elementUrl = `<${window.location.href}>`;
+    const lastElementId = stepsJson[stepsJson.length - 1]!.result.id;
+
+    return `Recipe for [\`${lastElementId}\`](${elementUrl})\n${message}`;
+  }
+
+  function wrapMessage(message: string) {
+    return `
+\`\`\`adoc
+${message}
+\`\`\`
+`;
+  }
+
+  async function handleBigLineage(webhookUrl: string, stepsJson: LineageType) {
     const steps = convertToSteps(stepsJson);
     const messages = splitIntoSeparateMessage(steps);
 
     for (let i = 0, len = messages.length; i < len; i++) {
-      const stepsForThisMessage = messages[i];
+      const stepsForThisMessage = messages[i]!;
       const message = convertToMessage(stepsForThisMessage);
 
       let formattedMessage;
@@ -218,7 +170,7 @@
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       } else {
-        const data = await response.json();
+        const data: LineageDataType = await response.json();
         return data;
       }
     } catch (error) {
@@ -226,41 +178,67 @@
     }
   }
 
-  function convertToSteps(stepsJson) {
-    const steps = [];
+  // ---------- Element handling ----------
 
-    for (const item of stepsJson) {
-      const { a, b, result } = item;
-      steps.push(`${a.id} + ${b.id} = ${result.id}`);
+  // ---------- Discord button setup functions ----------
+
+  async function handleDiscordButtonClick() {
+    if (!localStorage.getItem("webhookEncoded")) {
+      newWebhook();
     }
 
-    return steps;
+    const webhook = await getWebhook();
+
+    const elementUrl = getElementUrl();
+    // const _data = ib.getLineage();
+    const data = await getLineage(elementUrl);
+
+    if (data) {
+      const stepsJson = data.steps;
+
+      const steps = convertToSteps(stepsJson);
+      const message = convertToMessage(steps);
+
+      const messageWithLengthCount = addStepCount(message, steps);
+      const wrappedMessage = wrapMessage(messageWithLengthCount);
+      const formattedMessage = addHeader(wrappedMessage, stepsJson);
+
+      if (formattedMessage.length <= 2000) {
+        await sendMessage(webhook, formattedMessage);
+      } else {
+        const sendBigMessage = confirm(
+          `Lineage is too big\nMax: 2000 characters\nLineage: ${
+            formattedMessage.length
+          } characters\n\nDo you want the lineage to get sent in ${Math.ceil(
+            formattedMessage.length / 2000
+          )} separate messages?`
+        );
+        if (sendBigMessage) handleBigLineage(webhook, stepsJson);
+      }
+    }
   }
 
-  function convertToMessage(steps: string[]) {
-    return steps.join("\n");
+  function setupDiscordButton() {
+    const discordButtonImageUrl =
+      "https://img.icons8.com/ios7/512/FFFFFF/discord-logo.png";
+
+    const buttonMenu = document.querySelector(".ibuttons") as HTMLDivElement;
+
+    const discordButton = document.createElement("button");
+
+    const discordButtonImage = document.createElement("img");
+    discordButtonImage.id = "discord-button-image";
+    discordButtonImage.src = discordButtonImageUrl;
+    discordButtonImage.draggable = false;
+
+    discordButton.appendChild(discordButtonImage);
+
+    buttonMenu.appendChild(discordButton);
+
+    discordButton.addEventListener("click", handleDiscordButtonClick);
   }
 
-  function addStepCount(message: string, steps: string[]) {
-    return `${message}  // ${steps.length} :: `;
-  }
-
-  function addHeader(message: string, stepsJson) {
-    const elementUrl = `<${window.location.href}>`;
-    const lastElementId = stepsJson[stepsJson.length - 1].result.id;
-
-    return `Recipe for [\`${lastElementId}\`](${elementUrl})\n${message}`;
-  }
-
-  function wrapMessage(message: string) {
-    return `
-\`\`\`adoc
-${message}
-\`\`\`
-`;
-  }
-
-  // ---------- Element handling ----------
+  // ---------- Discord button setup functions ----------
 
   // ---------- Main program ----------
 

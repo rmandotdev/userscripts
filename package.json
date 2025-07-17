@@ -6,11 +6,14 @@
     "build": "bun run ./src/build/build.ts",
     "deploy": "bunx wrangler deploy"
   },
+  "dependencies": {
+    "infinibrowser": "^0.2.0"
+  },
   "devDependencies": {
-    "@types/bun": "^1.2.18",
+    "@types/bun": "^1.2.19",
     "@violentmonkey/types": "^0.2.2",
-    "infinite-craft": "^0.0.3",
-    "wrangler": "^4.24.3"
+    "infinite-craft": "^0.0.5",
+    "wrangler": "^4.25.0"
   },
   "peerDependencies": {
     "typescript": "^5.8.3"
