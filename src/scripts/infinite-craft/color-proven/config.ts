@@ -4,7 +4,7 @@ export default defineConfig({
   headers: {
     name: "Color proven Elements",
     match: "https://neal.fun/infinite-craft/",
-    version: "2.0",
+    version: "2.2.1",
     description:
       "Colors elements that are proven to Base Eements in green color",
   },
