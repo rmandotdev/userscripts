@@ -26,6 +26,30 @@
     }
   }
 
+  function handleInstanceColor(instance: ICInstanceDivElement) {
+    const textContent = instance.childNodes[1].textContent;
+    if (!textContent) throw new Error("Something went wrong!");
+    const text = textContent.trim().toLowerCase();
+    const elem = elementsMap[text];
+    if (text.length > 30) {
+      instance.style.color = red_color;
+    } else if (elem && elem.color) {
+      instance.style.color = elem.color;
+    }
+  }
+
+  function handleItemColor(item: ICItemDivElement) {
+    const textContent = item.childNodes[1].textContent;
+    if (!textContent) throw new Error("Something went wrong!");
+    const text = textContent.trim().toLowerCase();
+    const elem = elementsMap[text];
+    if (text.length > 30) {
+      item.style.color = red_color;
+    } else if (elem && elem.color) {
+      item.style.color = elem.color;
+    }
+  }
+
   function handleNode(node: Node) {
     if (!(node instanceof HTMLElement)) return;
 
@@ -34,50 +58,40 @@
       node.querySelector(".instance-emoji")
     ) {
       const this_node = node as ICInstanceDivElement;
-      const instance = IC.getInstances().find((x) => x.element == this_node);
+      const instance = IC.getInstances().find((x) => x.element === this_node);
       if (!instance) return;
-      const text = instance.text.toLowerCase();
-      const elem = elementsMap[text];
-      if (text.length > 30) {
-        this_node.style.color = red_color;
-      } else if (elem && elem.color) {
-        this_node.style.color = elem.color;
-      }
+      handleInstanceColor(instance.element);
     } else if (
       node.classList.contains("item-wrapper") &&
       node.querySelector(".item")
     ) {
       const this_node = node as ICItemWrapperDivElement;
       const item = Array.from(this_node.querySelectorAll(".item")).find(
-        (x) => x == this_node.children[0]
+        (x) => x === this_node.children[0]
       );
       if (!item) return;
-      const textContent = item.childNodes[1].textContent;
-      if (!textContent) throw new Error("Something went wrong!");
-      const text = textContent.trim().toLowerCase();
-      const elem = elementsMap[text];
-      if (text.length > 30) {
-        this_node.style.color = red_color;
-      } else if (elem && elem.color) {
-        this_node.style.color = elem.color;
-      }
+      handleItemColor(item);
     }
   }
 
-  window.addEventListener("load", async () => {
-    const proven = await loadData("proven", "load");
-    const disproven = await loadData("disproven", "load");
+  async function init() {
+    {
+      const proven = await loadData("proven", "load");
+      const disproven = await loadData("disproven", "load");
+
+      storeColorData(proven, disproven);
+    }
 
     const interval = setInterval(() => {
       if (!IC) return;
       clearInterval(interval);
     }, 3000);
 
-    storeColorData(proven, disproven);
-
     const instanceObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (!mutation.addedNodes.length) return;
+        if (!mutation.addedNodes.length) {
+          continue;
+        }
 
         for (const node of mutation.addedNodes) {
           handleNode(node);
@@ -96,10 +110,19 @@
       const proven = await loadData("proven", "update");
       const disproven = await loadData("disproven", "update");
       storeColorData(proven, disproven);
+      document.querySelectorAll(".instance").forEach((instance) => {
+        handleInstanceColor(instance);
+      });
+      document.querySelectorAll(".item").forEach((item) => {
+        handleItemColor(item);
+      });
     });
 
     const sideControls = document.querySelector(".side-controls");
-
     sideControls.append(buttonUpdateData);
+  }
+
+  window.addEventListener("load", async () => {
+    init();
   });
 })();
