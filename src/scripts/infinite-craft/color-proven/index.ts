@@ -9,7 +9,7 @@
   async function loadData(
     type: "proven" | "disproven",
     why: "load" | "update"
-  ) {
+  ): Promise<string[]> {
     const api_url = "https://colorproven.gameroman.workers.dev";
     const url = `${api_url}/get?type=${type}&why=${why}`;
     const response = await fetch(url);
@@ -17,7 +17,7 @@
     return data as string[];
   }
 
-  async function storeColorData(green: string[], red: string[]) {
+  function storeColorData(green: string[], red: string[]): void {
     for (const elem of green) {
       elementsMap[elem.toLowerCase()] = { color: green_color };
     }
@@ -26,31 +26,42 @@
     }
   }
 
-  function handleInstanceColor(instance: ICInstanceDivElement) {
+  function isDeadNumber(text: string): boolean {
+    if (!/^\d+$/.test(text)) return false;
+    const num = Number(text);
+    if (isNaN(num)) return false;
+    return num >= 1_000_000;
+  }
+
+  function handleInstanceColor(instance: ICInstanceDivElement): void {
     const textContent = instance.childNodes[1].textContent;
     if (!textContent) throw new Error("Something went wrong!");
     const text = textContent.trim().toLowerCase();
     const elem = elementsMap[text];
     if (text.length > 30) {
       instance.style.color = red_color;
+    } else if (isDeadNumber(text)) {
+      instance.style.color = red_color;
     } else if (elem && elem.color) {
       instance.style.color = elem.color;
     }
   }
 
-  function handleItemColor(item: ICItemDivElement) {
+  function handleItemColor(item: ICItemDivElement): void {
     const textContent = item.childNodes[1].textContent;
     if (!textContent) throw new Error("Something went wrong!");
     const text = textContent.trim().toLowerCase();
     const elem = elementsMap[text];
     if (text.length > 30) {
       item.style.color = red_color;
+    } else if (isDeadNumber(text)) {
+      item.style.color = red_color;
     } else if (elem && elem.color) {
       item.style.color = elem.color;
     }
   }
 
-  function handleNode(node: Node) {
+  function handleNode(node: Node): void {
     if (!(node instanceof HTMLElement)) return;
 
     if (
@@ -74,18 +85,94 @@
     }
   }
 
-  async function init() {
+  function updateButtonText(
+    button: HTMLButtonElement,
+    texts: readonly string[],
+    interval: number
+  ): Promise<() => void> {
+    let index = 0;
+    return new Promise((resolve) => {
+      const intervalId = window.setInterval(() => {
+        button.textContent = texts[index]!;
+        index = (index + 1) % texts.length;
+      }, interval);
+      resolve(() => {
+        window.clearInterval(intervalId);
+      });
+    });
+  }
+
+  function setupButtonForUpdatingData(): void {
+    const buttonForUpdatingData = document.createElement("button");
+    buttonForUpdatingData.textContent = "Update data";
+    buttonForUpdatingData.style.fontSize = "1.25rem";
+
+    buttonForUpdatingData.addEventListener("click", async () => {
+      buttonForUpdatingData.disabled = true;
+      const stopAnimation = await updateButtonText(
+        buttonForUpdatingData,
+        ["Updating..", "Updating...", "Updating."],
+        250
+      );
+
+      try {
+        const [proven, disproven] = await Promise.all([
+          loadData("proven", "update"),
+          loadData("disproven", "update"),
+        ]);
+
+        storeColorData(proven, disproven);
+
+        document.querySelectorAll(".instance").forEach((instance) => {
+          handleInstanceColor(instance);
+        });
+
+        document.querySelectorAll(".item").forEach((item) => {
+          handleItemColor(item);
+        });
+
+        stopAnimation();
+        buttonForUpdatingData.textContent = "Data updated successfully ✅";
+
+        window.setTimeout(() => {
+          buttonForUpdatingData.textContent = "Update data";
+          buttonForUpdatingData.disabled = false;
+        }, 2500);
+      } catch (error) {
+        stopAnimation();
+        buttonForUpdatingData.textContent = "Failed to update data ❌";
+
+        window.setTimeout(() => {
+          buttonForUpdatingData.textContent = "Update data";
+          buttonForUpdatingData.disabled = false;
+        }, 2500);
+        console.error("Update failed:", error);
+      }
+    });
+
+    const sideControls = document.querySelector(".side-controls");
+    sideControls.prepend(buttonForUpdatingData);
+  }
+
+  async function init(): Promise<void> {
     {
-      const proven = await loadData("proven", "load");
-      const disproven = await loadData("disproven", "load");
+      const [proven, disproven] = await Promise.all([
+        loadData("proven", "load"),
+        loadData("disproven", "load"),
+      ]);
 
       storeColorData(proven, disproven);
     }
 
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
+      try {
+        IC;
+      } catch {
+        return;
+      }
       if (!IC) return;
-      clearInterval(interval);
-    }, 3000);
+      window.clearInterval(interval);
+    }, 2000);
 
     const instanceObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
@@ -104,22 +191,7 @@
       subtree: true,
     });
 
-    const buttonUpdateData = document.createElement("button");
-    buttonUpdateData.textContent = "Update data";
-    buttonUpdateData.addEventListener("click", async () => {
-      const proven = await loadData("proven", "update");
-      const disproven = await loadData("disproven", "update");
-      storeColorData(proven, disproven);
-      document.querySelectorAll(".instance").forEach((instance) => {
-        handleInstanceColor(instance);
-      });
-      document.querySelectorAll(".item").forEach((item) => {
-        handleItemColor(item);
-      });
-    });
-
-    const sideControls = document.querySelector(".side-controls");
-    sideControls.append(buttonUpdateData);
+    setupButtonForUpdatingData();
   }
 
   window.addEventListener("load", async () => {

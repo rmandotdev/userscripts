@@ -204,7 +204,7 @@ function initRecipeLookup({
       idMap.set(item.id, item);
       if (item.text === itemText) itemId = item.id;
     }
-    const item = idMap.get(itemId);
+    const item = idMap.get(itemId!);
 
     if (!item) throw new Error("this shouldn't be possible in normal gameplay");
 
@@ -516,8 +516,8 @@ function initSidebarUpdates({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   };
 }
 
-function choose<T>(a: T[]) {
-  return a[Math.floor(Math.random() * a.length)]!;
+function choose<T>(array: T[]) {
+  return array[Math.floor(Math.random() * array.length)]!;
 }
 
 function getRandomCirclePos(center: { x: number; y: number }, radius: number) {
@@ -537,13 +537,22 @@ function initRandomButton({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   sideControls.appendChild(randomButton);
 
   function chooseRandomElement() {
-    let _f;
-    const items =
-      (_f = v_sidebar.searchResults).length > 0
-        ? _f
-        : (_f = v_sidebar.filteredElements).length > 0
-        ? _f
+    let items =
+      v_sidebar.searchResults.length > 0
+        ? v_sidebar.searchResults
+        : v_sidebar.filteredElements.length > 0
+        ? v_sidebar.filteredElements
         : v_sidebar.items;
+
+    //! filters out dead elements
+    items = items.filter(
+      (item) =>
+        !(
+          (/^\d+$/.test(item.text) && item.text.length > 6) ||
+          item.text.length > 30
+        )
+    );
+
     if (items.length < 1) return null;
     if (settings.randomButton === 1) return choose(items);
     if (items.length < 32768) {
