@@ -13,24 +13,22 @@
 
     "types": ["infinite-craft/types", "@violentmonkey/types"],
 
-    // Best practices
+    // Max strictness
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-
-    // Some stricter flags (disabled by default)
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
 
-    // Some more
+    // Allow JS
     "allowJs": true,
-    "checkJs": true,
-    "forceConsistentCasingInFileNames": true
+    "checkJs": true
   },
 
   "include": ["src/**/*"],

@@ -30,6 +30,7 @@ interface Exported {
   openRecipeModal: any;
   pinElements: any;
   unpinElements: any;
+  resetPinnedElements: any;
   loadPinnedElements: any;
 }
 
@@ -268,7 +269,7 @@ function initRecipeLookup({
 
 function initRecipeLogging() {
   window.addEventListener("ic-craftapi", function (e) {
-    const { a, b, result } = e.detail;
+    const { a, b, result } = (e as CustomEvent).detail;
     if (result) console.log(`${a} + ${b} = ${result.text}`);
   });
 }
@@ -322,8 +323,8 @@ function initPinnedContainer({
   function pinElements(elements: Item | Item[], updateStorage = true) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    const es = [],
-      newElements = [];
+    const es = [];
+    const newElements = [];
     for (const e of elements) {
       if (pinnedIds.has(e.id)) continue;
       pinnedIds.add(e.id);
@@ -333,11 +334,15 @@ function initPinnedContainer({
     pinnedContainer.append(...es);
 
     if (updateStorage) {
-      const d = JSON.parse(localStorage.getItem("pinned-elements") ?? "{}"),
-        pinnedElements: Item[] = d[v_container.currSave] ?? [];
+      const data = JSON.parse(
+        localStorage.getItem("pinned-elements") ?? "{}"
+      ) as {
+        [key: number]: Item[];
+      };
+      const pinnedElements: Item[] = data[v_container.currSave] ?? [];
       pinnedElements.push(...newElements);
-      d[v_container.currSave] = pinnedElements;
-      localStorage.setItem("pinned-elements", JSON.stringify(d));
+      data[v_container.currSave] = pinnedElements;
+      localStorage.setItem("pinned-elements", JSON.stringify(data));
     }
   }
   exported.pinElements = pinElements;
@@ -345,28 +350,32 @@ function initPinnedContainer({
   function unpinElements(elements: Item | Item[], updateStorage = true) {
     if (!Array.isArray(elements)) elements = [elements];
 
-    const removed = new Set();
+    const removed: Set<string> = new Set();
 
     for (const e of elements) {
       if (!pinnedIds.has(e.id)) continue;
-      const d = (
+      const div = (
         pinnedContainer.querySelector(
           `.item[data-item-id="${e.id}"]`
         ) as ICItemDivElement | null
       )?.parentNode;
-      if (!d) continue;
+      if (!div) continue;
       pinnedIds.delete(e.id);
       if (updateStorage) removed.add(e.id);
-      d.remove();
+      div.remove();
     }
 
     if (updateStorage) {
-      const d = JSON.parse(localStorage.getItem("pinned-elements") ?? "{}"),
-        pinnedElements = d[v_container.currSave] ?? [];
-      d[v_container.currSave] = pinnedElements.filter(
+      const data = JSON.parse(
+        localStorage.getItem("pinned-elements") ?? "{}"
+      ) as {
+        [key: number]: Item[];
+      };
+      const pinnedElements: Item[] = data[v_container.currSave] ?? [];
+      data[v_container.currSave] = pinnedElements.filter(
         (e) => !removed.has(e.id)
       );
-      localStorage.setItem("pinned-elements", JSON.stringify(d));
+      localStorage.setItem("pinned-elements", JSON.stringify(data));
     }
   }
   exported.unpinElements = unpinElements;
@@ -399,9 +408,9 @@ function initPinnedContainer({
       e.preventDefault();
       e.stopImmediatePropagation();
       unpinElements({
-        id: item.getAttribute("data-item-id"),
-        text: item.getAttribute("data-item-text"),
-        emoji: item.getAttribute("data-item-emoji"),
+        id: item.getAttribute("data-item-id")!,
+        text: item.getAttribute("data-item-text")!,
+        emoji: item.getAttribute("data-item-emoji")!,
         discovery: item.getAttribute("data-item-discovery") !== null,
       });
     }
@@ -414,9 +423,9 @@ function initPinnedContainer({
       e.preventDefault();
       e.stopImmediatePropagation();
       pinElements({
-        id: item.getAttribute("data-item-id"),
-        text: item.getAttribute("data-item-text"),
-        emoji: item.getAttribute("data-item-emoji"),
+        id: item.getAttribute("data-item-id")!,
+        text: item.getAttribute("data-item-text")!,
+        emoji: item.getAttribute("data-item-emoji")!,
         discovery: item.getAttribute("data-item-discovery") !== null,
       });
     }
@@ -424,7 +433,7 @@ function initPinnedContainer({
 
   window.addEventListener("ic-switchsave", function (e) {
     resetPinnedElements();
-    loadPinnedElements(e.detail.newId);
+    loadPinnedElements((e as CustomEvent).detail.newId);
   });
 }
 

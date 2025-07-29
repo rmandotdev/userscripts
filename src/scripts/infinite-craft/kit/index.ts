@@ -296,7 +296,7 @@
         "Prepend U+0020",
       ],
       "-": ["Append Hyphen", "Append-hyphen", "Add Hyphen", "Insert Dash"],
-    },
+    } as { [key: string]: string[] },
     customAppendCharacter(char: string) {
       // Return tools for the specific character or an empty array if not found
       return (
@@ -344,12 +344,16 @@
     ],
   };
 
+  interface DeSpellTech {
+    start: string;
+    goal?: string;
+    tools: string[];
+  }
+
   interface SpellTech {
     trigger?: (elem: string) => boolean;
     tech: string;
-    deSpell: (
-      elem: string
-    ) => string[] | { start: string; goal?: string; tools: string[] }[];
+    deSpell: (elem: string) => string[] | DeSpellTech[];
     modifyElement?: (elem: string) => string;
     stopAfter?: boolean;
     disabled: boolean;
@@ -550,11 +554,11 @@
           start: `"${elem}"`,
           tools: [
             ...tools.removeQuote,
-            elem[0],
-            elem.slice(0, 2),
-            elem.slice(0, 3),
-            elem.slice(0, 4),
-            elem.split(" ")[0],
+            elem[0]!,
+            elem.slice(0, 2)!,
+            elem.slice(0, 3)!,
+            elem.slice(0, 4)!,
+            elem.split(" ")[0]!,
           ],
         },
 
@@ -764,10 +768,11 @@
     const currentElement = splice(spellTech.tech, -1, element);
 
     // if there is no fancy deSpellStep stuff make it fancy
-    if (!deSpellSteps[0] || !deSpellSteps[0].tools)
-      deSpellSteps = [{ tools: deSpellSteps }];
+    if (!deSpellSteps[0] || !deSpellSteps[0].tools) {
+      deSpellSteps = [{ tools: deSpellSteps }] as DeSpellTech[];
+    }
 
-    for (const deSpellStep of deSpellSteps) {
+    for (const deSpellStep of deSpellSteps as DeSpellTech[]) {
       const start = deSpellStep.start
         ? (deSpellStep.start as string)
         : currentElement;
@@ -1123,7 +1128,7 @@
         .join("\n\n");
       console.groupCollapsed(...groupLineages);
       if (lineageMessage) console.log(lineageMessage);
-      console.groupEnd(...groupLineages);
+      console.groupEnd();
 
       const successMessage = processedElementsList.filter((x) =>
         resultExists(x)
@@ -1134,7 +1139,7 @@
       ];
       console.groupCollapsed(...groupSuccess);
       if (successMessage.length > 0) console.log(successMessage.join("\n"));
-      console.groupEnd(...groupSuccess);
+      console.groupEnd();
 
       const failedMessage = processedElementsList.filter(
         (x) => !resultExists(x)
@@ -1145,7 +1150,7 @@
       ];
       console.groupCollapsed(...groupFailed);
       if (failedMessage.length > 0) console.log(failedMessage.join("\n"));
-      console.groupEnd(...groupFailed);
+      console.groupEnd();
     };
   });
 })();
