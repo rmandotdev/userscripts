@@ -7,14 +7,14 @@
   const elementsMap: ElementsMap = {};
 
   async function loadData(
-    type: "proven" | "disproven",
     why: "load" | "update"
-  ): Promise<string[]> {
+  ): Promise<{ proven: string[]; disproven: string[] }> {
     const api_url = "https://colorproven.gameroman.workers.dev";
-    const url = `${api_url}/get?type=${type}&why=${why}`;
+    const ALL = "all";
+    const url = `${api_url}/get?type=${ALL}&why=${why}`;
     const response = await fetch(url);
     const data = await response.json();
-    return data as string[];
+    return data as { proven: string[]; disproven: string[] };
   }
 
   function storeColorData(green: string[], red: string[]): void {
@@ -111,15 +111,12 @@
       buttonForUpdatingData.disabled = true;
       const stopAnimation = await updateButtonText(
         buttonForUpdatingData,
-        ["Updating..", "Updating...", "Updating."],
-        250
+        ["Updating..", "Updating..."],
+        300
       );
 
       try {
-        const [proven, disproven] = await Promise.all([
-          loadData("proven", "update"),
-          loadData("disproven", "update"),
-        ]);
+        const { proven, disproven } = await loadData("update");
 
         storeColorData(proven, disproven);
 
@@ -156,10 +153,7 @@
 
   async function init(): Promise<void> {
     {
-      const [proven, disproven] = await Promise.all([
-        loadData("proven", "load"),
-        loadData("disproven", "load"),
-      ]);
+      const { proven, disproven } = await loadData("load");
 
       storeColorData(proven, disproven);
     }
