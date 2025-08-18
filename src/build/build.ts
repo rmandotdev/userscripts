@@ -1,7 +1,10 @@
 import { build } from "bun";
+
 import * as path from "path";
 import * as fs from "fs/promises";
+
 import { pathToFileURL, fileURLToPath } from "url";
+
 import { serializeHeader, type HeaderConfig } from "./config";
 
 const SRC_USERSCRIPTS = fileURLToPath(new URL("../scripts/", import.meta.url));
@@ -18,6 +21,7 @@ function logVerbose(...args: any[]) {
     console.log(...args);
   }
 }
+const logNonVerbose = console.log;
 
 async function copyDir(src: string, dest: string) {
   await fs.mkdir(dest, { recursive: true });
@@ -53,7 +57,13 @@ async function copyDir(src: string, dest: string) {
   }
 }
 
-async function buildUserScript(dir: string) {
+async function buildUserscript(dir: string): Promise<
+  | {
+      finalConfig: HeaderConfig;
+      serializedHeader: string;
+    }
+  | undefined
+> {
   const configPath = path.join(dir, CONFIG_FILE_NAME);
   const mainTSPath = (await fs.readdir(dir)).find(
     (f) => f.startsWith("index.") && (f.endsWith(".ts") || f.endsWith(".tsx"))
@@ -99,50 +109,86 @@ async function buildUserScript(dir: string) {
   const bundledFile = path.join(outDir, "main.js");
   const bundledCode = await fs.readFile(bundledFile, "utf-8");
 
-  const fullCode = `${header}\n${bundledCode}`;
+  const fullCode = `${header.serializedHeader}\n${bundledCode}`;
 
   const finalFile = path.join(outDir, "index.user.js");
   await fs.writeFile(finalFile, fullCode, "utf-8");
 
+  const metaFile = path.join(outDir, "meta.json");
+  const meta = { headers: headerConfig };
+  const stringifiedMeta = JSON.stringify(meta);
+  await fs.writeFile(metaFile, stringifiedMeta, "utf-8");
+
   await fs.unlink(bundledFile);
 
   logVerbose(`✅ Built userscript: ${finalFile}`);
+
+  return header;
 }
 
-async function buildAll() {
-  console.log("\n🧹 Cleaning dist directory...");
-  await fs.rm(DIST, { recursive: true, force: true });
-
-  console.log("\n📤 Copying public files...");
-  await copyDir(SRC_PUBLIC, DIST);
-  console.log("✅ Public files copied.");
-
-  async function findUserscriptDirs(dir: string): Promise<string[]> {
-    let result: string[] = [];
-    for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
-      const fullPath = path.join(dir, entry.name);
-      if (entry.isDirectory()) {
-        result = result.concat(await findUserscriptDirs(fullPath));
-      } else if (entry.name === CONFIG_FILE_NAME) {
-        result.push(dir);
-      }
+async function findUserscriptDirs(dir: string): Promise<string[]> {
+  let result: string[] = [];
+  for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      result = result.concat(await findUserscriptDirs(fullPath));
+    } else if (entry.name === CONFIG_FILE_NAME) {
+      result.push(dir);
     }
-    return result;
   }
+  return result;
+}
 
-  logVerbose(`\n🔍 Searching for userscripts in ${SRC_USERSCRIPTS}...`);
+async function buildUserscripts() {
+  logVerbose(`🔍 Searching for userscripts in ${SRC_USERSCRIPTS}...`);
   const userscriptDirs = await findUserscriptDirs(SRC_USERSCRIPTS);
   if (userscriptDirs.length === 0) {
     console.warn(`⚠️ No userscripts found in ${SRC_USERSCRIPTS}`);
   } else {
-    console.log(`🔎 Found ${userscriptDirs.length} userscript(s).`);
+    logNonVerbose(`🔎 Found ${userscriptDirs.length} userscripts.`);
   }
+
+  const userscriptsMeta: {
+    name: string;
+    url?: string;
+    version?: string;
+  }[] = [];
 
   for (const dir of userscriptDirs) {
-    await buildUserScript(dir);
+    const header = await buildUserscript(dir);
+    if (header) {
+      const cfg = header.finalConfig;
+      userscriptsMeta.push({
+        name: cfg.name,
+        url: cfg.downloadURL || cfg.updateURL,
+        version: cfg.version,
+      });
+    }
   }
 
-  console.log("\n🎉 Build process complete!");
+  const metaDir = path.join(DIST, "_meta");
+  await fs.mkdir(metaDir, { recursive: true });
+  const metadata = { userscripts: userscriptsMeta };
+  const stringifiedMeta = JSON.stringify(metadata);
+  const userscriptsMetaFile = path.join(metaDir, "userscripts.json");
+  await fs.writeFile(userscriptsMetaFile, stringifiedMeta, "utf-8");
+}
+
+async function buildAll() {
+  // -- Cleaning dist directory --
+  logNonVerbose("\n🧹 Cleaning dist directory...");
+  await fs.rm(DIST, { recursive: true, force: true });
+
+  // -- Copying public files --
+  logNonVerbose("\n📤 Copying public files...");
+  await copyDir(SRC_PUBLIC, DIST);
+  logNonVerbose("✅ Public files copied.\n");
+
+  // -- Building userscripts --
+  await buildUserscripts();
+  logNonVerbose(`✅ Built userscripts.`);
+
+  logNonVerbose("\n🎉 Build process complete!");
 }
 
 buildAll().catch((e) => {
