@@ -1,110 +1,132 @@
+type LineageInfo = { steps: number; lineageId: string };
+
 (function () {
-  type LineagesFileType = "verified" | "submitted" | "both";
-  type Lineage = { steps: number; lineageId: string };
+  const API_URL = "https://ib.gameroman.workers.dev/alt-lineages";
 
-  //! 'verified' - Verified lineages only
-  //! 'submitted' - User-submitted lineages only
-  //! 'both' - Both verified and user-submitted
-  const lineagesFile: LineagesFileType = "both";
-
-  async function loadLineages(type: LineagesFileType) {
+  async function loadLineages(): Promise<LineageInfo[]> {
     const urlParams = new URLSearchParams(window.location.search);
+
     const itemId =
       urlParams.get("id") || window.location.pathname.split("/")[2];
 
-    return fetch(
-      `https://ib.gameroman.workers.dev/alt-lineages/get?type=${type}&id=${itemId}`
-    )
-      .then((res) => res.json() as Promise<Lineage[]>)
-      .catch(() => []);
+    const type = "all";
+
+    const response = await fetch(`${API_URL}/get?type=${type}&id=${itemId}`);
+
+    try {
+      const data = (await response.json()) as LineageInfo[];
+      return data;
+    } catch {
+      return [];
+    }
   }
 
-  async function submitLineage() {
-    const statusText = document.getElementById(
-      "status-text"
-    ) as HTMLParagraphElement;
-    statusText.textContent = "Loading...";
-    statusText.style.color = "#777777";
+  function getStatusText() {
+    interface StatusText extends HTMLParagraphElement {
+      setSuccessMessage: (messsage: string) => void;
+      setWarning: (warning: string) => void;
+      setError: (error: string) => void;
+
+      setLoading: () => void;
+      setProcessing: () => void;
+      setInvalidInput: () => void;
+    }
+    const statusText = document.getElementById("status-text") as StatusText;
+
+    statusText.setSuccessMessage = (messsage: string) => {
+      statusText.textContent = messsage;
+      statusText.style.color = "#AAFFAA";
+    };
+    statusText.setWarning = (warning: string) => {
+      statusText.textContent = warning;
+      statusText.style.color = "#FFCC00";
+    };
+    statusText.setError = (error: string) => {
+      statusText.textContent = error;
+      statusText.style.color = "#FFAAAA";
+    };
+
+    statusText.setLoading = () => {
+      statusText.textContent = "Loading...";
+      statusText.style.color = "#777777";
+    };
+    statusText.setProcessing = () => {
+      statusText.textContent = "Processing...";
+      statusText.style.color = "#777777";
+    };
+    statusText.setInvalidInput = () => {
+      statusText.setError("Invalid input");
+    };
+
+    return statusText;
+  }
+
+  async function handleSubmitLineage() {
+    const statusText = getStatusText();
+    statusText.setLoading();
 
     const input = (document.getElementById("lineage-input") as HTMLInputElement)
       .value;
+
     if (!input.startsWith("https://infinibrowser.wiki/item/01")) {
-      statusText.textContent = "Invalid input";
-      statusText.style.color = "#FFAAAA";
+      statusText.setInvalidInput();
       return;
     }
 
     const lineageId = input.split("https://infinibrowser.wiki/item/")[1]!;
     if (lineageId.length != 26) {
-      statusText.textContent = "Invalid input";
-      statusText.style.color = "#FFAAAA";
+      statusText.setInvalidInput();
       return;
     }
 
-    // Retrieve data from localStorage or initialize it
-    let storedData = JSON.parse(
-      localStorage.getItem("lineageData") ||
-        '{"submittedLineages": [], "errors": {}}'
-    ) as { submittedLineages: string[]; errors: { [key: string]: string } };
+    const storedData = await GM.getValue<{
+      submittedLineages: string[];
+      errors: { [key: string]: string };
+    }>("lineageData", { submittedLineages: [], errors: {} });
 
-    // Check if the lineage has already been submitted
     if (storedData.submittedLineages.includes(lineageId)) {
-      statusText.textContent = "You have already submitted this lineage";
-      statusText.style.color = "#FFCC00";
+      statusText.setWarning("You have already submitted this lineage");
       return;
     }
 
-    // Check if the lineage has an error cached
-    if (storedData.errors[lineageId]) {
-      statusText.textContent = storedData.errors[lineageId];
-      statusText.style.color = "#FFAAAA";
+    const storedError = storedData.errors[lineageId];
+    if (storedError) {
+      statusText.setError(storedError);
       return;
     }
 
-    statusText.textContent = "Processing...";
-    statusText.style.color = "#777777";
+    statusText.setProcessing();
 
-    fetch(
-      `https://ib.gameroman.workers.dev/alt-lineages/submit?id=${encodeURIComponent(
-        lineageId
-      )}`,
+    const response = await fetch(
+      `${API_URL}/submit?id=${encodeURIComponent(lineageId)}`,
       { method: "POST" }
-    )
-      .then(
-        (response) =>
-          response.json() as Promise<
-            { OK: false; error: string } | { OK: true; message: string }
-          >
-      )
-      .then((data) => {
-        if (data.OK) {
-          statusText.textContent = data.message;
-          statusText.style.color = "#AAFFAA";
+    );
 
-          // Add the lineage to the list of submitted lineages
-          storedData.submittedLineages.push(lineageId);
-          localStorage.setItem("lineageData", JSON.stringify(storedData));
-        } else {
-          statusText.textContent = data.error;
-          statusText.style.color = "#FFAAAA";
+    try {
+      const data = (await response.json()) as
+        | { OK: false; error: string }
+        | { OK: true; message: string };
 
-          // Store the error in the errors object
-          storedData.errors[lineageId] = data.error;
-          localStorage.setItem("lineageData", JSON.stringify(storedData));
-        }
-      })
-      .catch((e) => {
-        statusText.textContent = "An error occurred";
-        statusText.style.color = "#FFAAAA";
-
-        // Store the error in the errors object
-        storedData.errors[lineageId] = e.message;
-        localStorage.setItem("lineageData", JSON.stringify(storedData));
-      });
+      if (data.OK) {
+        statusText.setSuccessMessage(data.message);
+        storedData.submittedLineages.push(lineageId);
+        await GM.setValue("lineageData", storedData);
+      } else {
+        statusText.setError(data.error);
+        storedData.errors[lineageId] = data.error;
+        await GM.setValue("lineageData", storedData);
+      }
+    } catch (e) {
+      const error = e as Error;
+      const errorMessage = `An error occurred: ${error.message}`;
+      statusText.setError(errorMessage);
+      storedData.errors[lineageId] = errorMessage;
+      await GM.setValue("lineageData", storedData);
+    }
   }
 
   function closeModal() {
-    (document.getElementById("modal_wrapper") as HTMLElement).remove();
+    (document.getElementById("modal_wrapper") as HTMLDivElement).remove();
   }
 
   function openLineageModal() {
@@ -153,7 +175,7 @@ gap: 2rem;
 `;
 
     const modalName = document.createElement("h2");
-    modalName.textContent = "Submit Alternative Lineage";
+    modalName.textContent = "Submit Alternative LineageInfo";
     modalName.style.margin = "0px";
     modalTop.appendChild(modalName);
 
@@ -211,7 +233,7 @@ width: 475px;
     const submitButton = document.createElement("button");
     submitButton.textContent = "Submit";
     submitButton.className = "btn";
-    submitButton.addEventListener("click", submitLineage);
+    submitButton.addEventListener("click", handleSubmitLineage);
     modal.appendChild(submitButton);
 
     modalWrapper.appendChild(modal);
@@ -220,15 +242,7 @@ width: 475px;
     );
   }
 
-  function init(lineages: Lineage[]) {
-    const altLineagesButton = document.createElement("button");
-    altLineagesButton.className = "navbtn";
-    altLineagesButton.dataset["id"] = "alternative_lineages_section";
-    altLineagesButton.textContent = `Alternative Lineages (${lineages.length})`;
-    (document.querySelector("div.nav") as HTMLElement).appendChild(
-      altLineagesButton
-    );
-
+  function createAltLineagesSection() {
     const altLineagesSection = document.createElement("section");
     altLineagesSection.id = "alternative_lineages_section";
     altLineagesSection.style.display = "none";
@@ -244,32 +258,52 @@ width: 475px;
     const altLineagesSubmitButton = document.createElement("button");
     altLineagesSubmitButton.className = "btn";
     altLineagesSubmitButton.id = "submit-alt-lineage";
-    altLineagesSubmitButton.textContent = "Submit Alt Lineage";
+    altLineagesSubmitButton.textContent = "Submit Alt LineageInfo";
     altLineagesSubmitButton.style.display = "inline";
     altLineagesSubmitButton.addEventListener("click", openLineageModal);
     altLineagesSectionTopDiv.appendChild(altLineagesSubmitButton);
 
     altLineagesSection.appendChild(altLineagesSectionTopDiv);
 
+    return altLineagesSection;
+  }
+
+  function createLineageDiv(lineage: LineageInfo) {
+    const lineageDiv = document.createElement("div");
+    lineageDiv.className = "item";
+    lineageDiv.textContent = `${lineage.steps} steps`;
+
+    lineageDiv.addEventListener("click", () => {
+      const itemUrl = `https://infinibrowser.wiki/item/${lineage.lineageId}`;
+      const newTab = window.open(itemUrl, "_blank");
+
+      if (newTab) {
+        newTab.focus();
+      }
+    });
+
+    return lineageDiv;
+  }
+
+  function init({
+    nav,
+    lineages,
+  }: {
+    nav: HTMLDivElement;
+    lineages: LineageInfo[];
+  }) {
+    const altLineagesButton = document.createElement("button");
+    altLineagesButton.className = "navbtn";
+    altLineagesButton.dataset["id"] = "alternative_lineages_section";
+    altLineagesButton.textContent = `Alternative Lineages (${lineages.length})`;
+    nav.appendChild(altLineagesButton);
+
+    const altLineagesSection = createAltLineagesSection();
+
     if (lineages.length) {
       const altLineagesDiv = document.createElement("div");
-
-      for (let lineage of lineages) {
-        let lineageDiv = document.createElement("div");
-        lineageDiv.className = "item";
-        lineageDiv.textContent = `${lineage.steps} steps`;
-
-        lineageDiv.addEventListener("click", () => {
-          const newTab = window.open(
-            `https://infinibrowser.wiki/item/${lineage.lineageId}`,
-            "_blank"
-          );
-
-          if (newTab) {
-            newTab.focus();
-          }
-        });
-
+      for (const lineage of lineages) {
+        const lineageDiv = createLineageDiv(lineage);
         altLineagesDiv.appendChild(lineageDiv);
       }
       altLineagesSection.appendChild(altLineagesDiv);
@@ -285,11 +319,14 @@ width: 475px;
     );
   }
 
+  const lineagesPromise = loadLineages();
+
   window.addEventListener("load", async () => {
-    if (!document.querySelector("div.nav")) return;
+    const nav = document.querySelector<HTMLDivElement>("div.nav");
+    if (!nav) return;
     if (window.location.pathname.startsWith("/item")) {
-      const lineages = await loadLineages(lineagesFile);
-      init(lineages);
+      const lineages = await lineagesPromise;
+      init({ nav, lineages });
     }
   });
 })();

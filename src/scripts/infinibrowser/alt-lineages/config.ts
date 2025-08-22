@@ -6,5 +6,6 @@ export default defineConfig({
     match: "https://infinibrowser.wiki/item*",
     version: "4.0.1",
     description: "Adds alternative lineages to InfiniBrowser",
+    grant: ["GM"],
   },
 });

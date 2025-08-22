@@ -25,10 +25,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "forceConsistentCasingInFileNames": true,
-
-    // Allow JS
-    "allowJs": true,
-    "checkJs": true
+    "verbatimModuleSyntax": true
   },
 
   "include": ["src/**/*"],
