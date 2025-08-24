@@ -13,7 +13,7 @@
     "@types/bun": "^1.2.20",
     "@violentmonkey/types": "^0.2.2",
     "infinite-craft": "^0.0.6",
-    "wrangler": "^4.30.0"
+    "wrangler": "^4.32.0"
   },
   "peerDependencies": {
     "typescript": "5.9.2"
