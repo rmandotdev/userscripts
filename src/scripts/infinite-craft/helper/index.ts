@@ -126,18 +126,18 @@ function initSearchRelevancy({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   };
 }
 
-interface Item {
+interface Element {
   id: string;
   text: string;
   emoji: string;
   discovery?: boolean;
 }
 
-function createItemElement(item: Item, wrap = false) {
+function createItemElement(item: Element | ICItemData, wrap = false) {
   const itemDiv = document.createElement("div");
-  itemDiv.setAttribute("data-item-emoji", item.emoji);
+  itemDiv.setAttribute("data-item-emoji", item.emoji!);
   itemDiv.setAttribute("data-item-text", item.text);
-  itemDiv.setAttribute("data-item-id", item.id);
+  itemDiv.setAttribute("data-item-id", item.id as string);
   if (item.discovery) itemDiv.setAttribute("data-item-discovery", "");
   itemDiv.setAttribute("data-item", "");
   itemDiv.classList.add("item");
@@ -320,7 +320,7 @@ function initPinnedContainer({
 
   const pinnedIds = new Set();
 
-  function pinElements(elements: Item | Item[], updateStorage = true) {
+  function pinElements(elements: Element | Element[], updateStorage = true) {
     if (!Array.isArray(elements)) elements = [elements];
 
     const es = [];
@@ -337,9 +337,9 @@ function initPinnedContainer({
       const data = JSON.parse(
         localStorage.getItem("pinned-elements") ?? "{}"
       ) as {
-        [key: number]: Item[];
+        [key: number]: Element[];
       };
-      const pinnedElements: Item[] = data[v_container.currSave] ?? [];
+      const pinnedElements: Element[] = data[v_container.currSave] ?? [];
       pinnedElements.push(...newElements);
       data[v_container.currSave] = pinnedElements;
       localStorage.setItem("pinned-elements", JSON.stringify(data));
@@ -347,7 +347,7 @@ function initPinnedContainer({
   }
   exported.pinElements = pinElements;
 
-  function unpinElements(elements: Item | Item[], updateStorage = true) {
+  function unpinElements(elements: Element | Element[], updateStorage = true) {
     if (!Array.isArray(elements)) elements = [elements];
 
     const removed: Set<string> = new Set();
@@ -369,9 +369,9 @@ function initPinnedContainer({
       const data = JSON.parse(
         localStorage.getItem("pinned-elements") ?? "{}"
       ) as {
-        [key: number]: Item[];
+        [key: number]: Element[];
       };
-      const pinnedElements: Item[] = data[v_container.currSave] ?? [];
+      const pinnedElements: Element[] = data[v_container.currSave] ?? [];
       data[v_container.currSave] = pinnedElements.filter(
         (e) => !removed.has(e.id)
       );
@@ -636,9 +636,9 @@ function initEvents({ v_container }: { v_container: IC_Container_VUE }) {
 function init() {
   GM.addStyle(css);
 
-  const v_container = document.querySelector(".container").__vue__,
-    v_sidebar = document.querySelector("#sidebar").__vue__,
-    v = { v_container, v_sidebar };
+  const v_container = document.querySelector(".container").__vue__;
+  const v_sidebar = document.querySelector("#sidebar").__vue__;
+  const v = { v_container, v_sidebar };
 
   initSidebarUpdates(v);
 
@@ -667,8 +667,8 @@ function init() {
     v_container.$refs.particles.style.display = "none";
   }
   if (settings.variation) {
-    const toLowerCase = String.prototype.toLowerCase,
-      find = Array.prototype.find;
+    const toLowerCase = String.prototype.toLowerCase;
+    const find = Array.prototype.find;
     Array.prototype.find = function (f) {
       if (
         this !== v_container.items ||

@@ -1,4 +1,4 @@
-import { LineageType, LineageDataType } from "infinibrowser";
+import type { LineageType, LineageDataType } from "infinibrowser";
 
 (function () {
   // ---------- Webhook setup functions ----------

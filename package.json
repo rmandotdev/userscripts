@@ -7,7 +7,7 @@
     "deploy": "bunx wrangler deploy"
   },
   "dependencies": {
-    "infinibrowser": "^0.2.0"
+    "infinibrowser": "^0.3.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.20",

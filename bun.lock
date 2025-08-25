@@ -4,7 +4,7 @@
     "": {
       "name": "userscripts",
       "dependencies": {
-        "infinibrowser": "^0.2.0",
+        "infinibrowser": "^0.3.0",
       },
       "devDependencies": {
         "@types/bun": "^1.2.20",
@@ -184,7 +184,7 @@
 
     "glob-to-regexp": ["glob-to-regexp@0.4.1", "", {}, "sha512-lkX1HJXwyMcprw/5YUZc2s7DrpAiHB21/V+E1rHUrVNokkvB6bqMzT0VfV6/86ZNabt1k14YOIaT7nDvOX3Iiw=="],
 
-    "infinibrowser": ["infinibrowser@0.2.0", "", { "peerDependencies": { "typescript": "^5.8.3" } }, "sha512-VwduLt2zLnf0xen3FN9X3H23ELe6S+hUCi/129a1uIIe6NO0YNKaF7twsej+DdqQe4TnWGgvzjX3R4zS/9YoYg=="],
+    "infinibrowser": ["infinibrowser@0.3.0", "", { "peerDependencies": { "typescript": "^5.9.2" } }, "sha512-I2gVyKLTN7a+xImnzFkiRueyKyj1w37kOXpokw9gybvHifKay6RF25DdEh1PXN5Nkr0AG+qCe6X8MBZl6y1YOw=="],
 
     "infinite-craft": ["infinite-craft@0.0.6", "", { "peerDependencies": { "typescript": "^5.8.3" } }, "sha512-Ih2gaWyrSV49ZGwsmanvdvwVp4joqZpVUaoTEDfS2lCQSCgvwasArQVm7l45BPTUhCgw45SZw10LRnMXyWAWww=="],
 
