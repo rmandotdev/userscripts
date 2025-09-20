@@ -3,8 +3,9 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
-    "outDir": "./dist",
+
     "rootDir": "./src",
+    "outDir": "./dist",
 
     "baseUrl": ".", // Base directory for resolving non-relative imports
     "paths": {

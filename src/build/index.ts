@@ -11,7 +11,7 @@ const SRC_USERSCRIPTS = fileURLToPath(new URL("../scripts/", import.meta.url));
 const SRC_PUBLIC = fileURLToPath(new URL("../public/", import.meta.url));
 const DIST = fileURLToPath(new URL("../../dist/", import.meta.url));
 
-const CONFIG_FILE_NAME = "config.ts";
+const CONFIG_FILE_NAME = "userscript.config.ts";
 
 // Parse CLI args for --verbose flag
 const verbose = process.argv.includes("--verbose");

@@ -1,28 +1,31 @@
 (function () {
-  const green_color = "#00cc1f"; // Color for Proven Elements
-  const red_color = "#ff1c1c"; // Color for Disroven Elements
+  const colors = {
+    /** Color for Proven Elements */
+    proven: "#00cc1f",
+    /** Color for Disproven Elements */
+    disproven: "#ff1c1c",
+  } as const;
 
   type ElementsMap = { [key: string]: { color: string } };
 
   const elementsMap: ElementsMap = {};
 
-  async function loadData(
-    why: "load" | "update"
-  ): Promise<{ proven: string[]; disproven: string[] }> {
+  type ElementsData = { proven: string[]; disproven: string[] };
+
+  async function loadData(why: "load" | "update"): Promise<ElementsData> {
     const api_url = "https://colorproven.gameroman.workers.dev";
-    const ALL = "all";
-    const url = `${api_url}/get?type=${ALL}&why=${why}`;
+    const url = `${api_url}/get?why=${why}`;
     const response = await fetch(url);
-    const data = await response.json();
-    return data as { proven: string[]; disproven: string[] };
+    const data: ElementsData = await response.json();
+    return data;
   }
 
   function storeColorData(green: string[], red: string[]): void {
     for (const elem of green) {
-      elementsMap[elem.toLowerCase()] = { color: green_color };
+      elementsMap[elem.toLowerCase()] = { color: colors.proven };
     }
     for (const elem of red) {
-      elementsMap[elem.toLowerCase()] = { color: red_color };
+      elementsMap[elem.toLowerCase()] = { color: colors.disproven };
     }
   }
 
@@ -39,9 +42,9 @@
     const text = textContent.trim().toLowerCase();
     const elem = elementsMap[text];
     if (text.length > 30) {
-      instance.style.color = red_color;
+      instance.style.color = colors.proven;
     } else if (isDeadNumber(text)) {
-      instance.style.color = red_color;
+      instance.style.color = colors.disproven;
     } else if (elem && elem.color) {
       instance.style.color = elem.color;
     }
@@ -53,9 +56,9 @@
     const text = textContent.trim().toLowerCase();
     const elem = elementsMap[text];
     if (text.length > 30) {
-      item.style.color = red_color;
+      item.style.color = colors.proven;
     } else if (isDeadNumber(text)) {
-      item.style.color = red_color;
+      item.style.color = colors.disproven;
     } else if (elem && elem.color) {
       item.style.color = elem.color;
     }
@@ -115,6 +118,7 @@
         300
       );
 
+      let success = false;
       try {
         const { proven, disproven } = await loadData("update");
 
@@ -128,22 +132,20 @@
           handleItemColor(item);
         });
 
-        stopAnimation();
-        buttonForUpdatingData.textContent = "Data updated successfully ✅";
-
-        window.setTimeout(() => {
-          buttonForUpdatingData.textContent = "Update data";
-          buttonForUpdatingData.disabled = false;
-        }, 2500);
+        success = true;
       } catch (error) {
+        console.error("Update failed:", error);
+      } finally {
         stopAnimation();
-        buttonForUpdatingData.textContent = "Failed to update data ❌";
-
+        buttonForUpdatingData.textContent = success
+          ? "Data updated successfully ✅"
+          : "Failed to update data ❌";
         window.setTimeout(() => {
           buttonForUpdatingData.textContent = "Update data";
+        }, 5 * 1000);
+        window.setTimeout(() => {
           buttonForUpdatingData.disabled = false;
-        }, 2500);
-        console.error("Update failed:", error);
+        }, 120 * 1000);
       }
     });
 
@@ -152,11 +154,8 @@
   }
 
   async function init(): Promise<void> {
-    {
-      const { proven, disproven } = await loadData("load");
-
-      storeColorData(proven, disproven);
-    }
+    const { proven, disproven } = await loadData("load");
+    storeColorData(proven, disproven);
 
     const interval = window.setInterval(() => {
       try {
@@ -170,10 +169,7 @@
 
     const instanceObserver = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
-        if (!mutation.addedNodes.length) {
-          continue;
-        }
-
+        if (!mutation.addedNodes.length) continue;
         for (const node of mutation.addedNodes) {
           handleNode(node);
         }
