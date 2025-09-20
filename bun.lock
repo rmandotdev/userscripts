@@ -8,11 +8,9 @@
       },
       "devDependencies": {
         "@violentmonkey/types": "^0.2.2",
-        "infinite-craft": "^0.0.6",
-        "wrangler": "^4.38.0",
-      },
-      "peerDependencies": {
+        "infinite-craft": "^0.0.7",
         "typescript": "5.9.2",
+        "wrangler": "^4.38.0",
       },
     },
   },
@@ -175,7 +173,7 @@
 
     "infinibrowser": ["infinibrowser@0.3.0", "", { "peerDependencies": { "typescript": "^5.9.2" } }, "sha512-I2gVyKLTN7a+xImnzFkiRueyKyj1w37kOXpokw9gybvHifKay6RF25DdEh1PXN5Nkr0AG+qCe6X8MBZl6y1YOw=="],
 
-    "infinite-craft": ["infinite-craft@0.0.6", "", { "peerDependencies": { "typescript": "^5.8.3" } }, "sha512-Ih2gaWyrSV49ZGwsmanvdvwVp4joqZpVUaoTEDfS2lCQSCgvwasArQVm7l45BPTUhCgw45SZw10LRnMXyWAWww=="],
+    "infinite-craft": ["infinite-craft@0.0.7", "", { "peerDependencies": { "typescript": "^5.9.2" } }, "sha512-5awazzivBtkZfuN7SfS+En3msYMIBOKx4zY551g1JWsrn3/p2TItcNJqRbsjEPYhovxNki234VxQxjtHo5vfrw=="],
 
     "is-arrayish": ["is-arrayish@0.3.2", "", {}, "sha512-eVRqCvVlZbuw3GrM63ovNSNAeA1K16kaR/LRY/92w0zxQ5/1YzwblUX652i4Xs9RwAGjW9d9y6X88t8OaAJfWQ=="],
 
