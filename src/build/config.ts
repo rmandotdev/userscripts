@@ -1,11 +1,30 @@
 import * as path from "path";
 
-export type HeaderConfig = Partial<VMScriptGMInfoScriptMeta> & {
+type UserscriptVersion =
+  | `${0}.${number}`
+  | `${number}.${0}`
+  | `${number}.${number}.${number}`
+  | `${number}.${number}.${number}.${string}`;
+
+export type HeaderConfig = {
   name: string;
   match: string | string[];
   description: string;
+  version: UserscriptVersion;
+
+  downloadURL?: string;
+  updateURL?: string;
+
+  namespace?: string;
+  author?: string;
+  supportURL?: string;
+  homepageURL?: string;
   license?: string;
-};
+} & Partial<{
+  grant: string[];
+  icon?: string;
+  runAt: VMScriptRunAt | "";
+}>;
 
 const defaultHeader: Partial<HeaderConfig> = {
   namespace: "rman.dev",

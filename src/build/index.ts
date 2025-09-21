@@ -90,6 +90,8 @@ async function buildUserscript(dir: string): Promise<
 
   await fs.mkdir(outDir, { recursive: true });
 
+  const TEMP_MAIN_FILE_NAME = "main.js";
+
   const result = await build({
     entrypoints: [entryPoint],
     outdir: outDir,
@@ -98,7 +100,7 @@ async function buildUserscript(dir: string): Promise<
     format: "esm",
     minify: false,
     splitting: false,
-    naming: { entry: "main.js" },
+    naming: { entry: TEMP_MAIN_FILE_NAME },
   });
 
   if (!result.success) {
@@ -106,15 +108,19 @@ async function buildUserscript(dir: string): Promise<
     return;
   }
 
-  const bundledFile = path.join(outDir, "main.js");
+  const bundledFile = path.join(outDir, TEMP_MAIN_FILE_NAME);
   const bundledCode = await fs.readFile(bundledFile, "utf-8");
 
   const fullCode = `${header.serializedHeader}\n${bundledCode}`;
 
-  const finalFile = path.join(outDir, "index.user.js");
+  const USERSCRIPT_OUTPUT_FILE_NAME = "index.user.js";
+
+  const finalFile = path.join(outDir, USERSCRIPT_OUTPUT_FILE_NAME);
   await fs.writeFile(finalFile, fullCode, "utf-8");
 
-  const metaFile = path.join(outDir, "meta.json");
+  const USERSCRIPT_META_FILE_NAME = "meta.json";
+
+  const metaFile = path.join(outDir, USERSCRIPT_META_FILE_NAME);
   const meta = { headers: headerConfig };
   const stringifiedMeta = JSON.stringify(meta);
   await fs.writeFile(metaFile, stringifiedMeta, "utf-8");
