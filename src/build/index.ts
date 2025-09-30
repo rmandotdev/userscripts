@@ -1,9 +1,11 @@
-import { build } from "bun";
+/// <reference types="node" />
 
-import * as path from "path";
-import * as fs from "fs/promises";
+import { rolldown } from "rolldown";
 
-import { pathToFileURL, fileURLToPath } from "url";
+import * as path from "node:path";
+import * as fs from "node:fs/promises";
+
+import { pathToFileURL, fileURLToPath } from "node:url";
 
 import { serializeHeader, type HeaderConfig } from "./config";
 
@@ -91,26 +93,25 @@ async function buildUserscript(dir: string): Promise<
   await fs.mkdir(outDir, { recursive: true });
 
   const TEMP_MAIN_FILE_NAME = "main.js";
+  const tempFilePath = path.join(outDir, TEMP_MAIN_FILE_NAME);
 
-  const result = await build({
-    entrypoints: [entryPoint],
-    outdir: outDir,
-    target: "browser",
-    sourcemap: "none",
-    format: "esm",
-    minify: false,
-    splitting: false,
-    naming: { entry: TEMP_MAIN_FILE_NAME },
+  const bundle = await rolldown({
+    input: entryPoint,
   });
 
-  if (!result.success) {
-    console.error(`❌ Build failed for ${entryPoint}`);
+  const result = await bundle.generate({
+    file: tempFilePath,
+    format: "esm",
+    sourcemap: false,
+    minify: "dce-only",
+  });
+
+  if (result.output.length !== 1) {
+    console.error(`❌ Unexpected build output for ${entryPoint}`);
     return;
   }
 
-  const bundledFile = path.join(outDir, TEMP_MAIN_FILE_NAME);
-  const bundledCode = await fs.readFile(bundledFile, "utf-8");
-
+  const bundledCode = result.output[0].code;
   const fullCode = `${header.serializedHeader}\n${bundledCode}`;
 
   const USERSCRIPT_OUTPUT_FILE_NAME = "index.user.js";
@@ -124,8 +125,6 @@ async function buildUserscript(dir: string): Promise<
   const meta = { headers: headerConfig };
   const stringifiedMeta = JSON.stringify(meta);
   await fs.writeFile(metaFile, stringifiedMeta, "utf-8");
-
-  await fs.unlink(bundledFile);
 
   logVerbose(`✅ Built userscript: ${finalFile}`);
 
