@@ -7,6 +7,7 @@
     "deploy": "bunx wrangler deploy"
   },
   "dependencies": {
+    "bundlemonkey": "^0.7.4",
     "infinibrowser": "^0.3.0"
   },
   "devDependencies": {
