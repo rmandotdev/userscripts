@@ -44,32 +44,26 @@ type UserscriptMeta = { headers: UserscriptMetaHeaders };
     return num >= 1_000_000;
   }
 
-  function handleInstanceColor(instance: ICInstanceDivElement): void {
-    const textContent = instance.childNodes[1].textContent;
+  function handleDivColor(div: ICInstanceDivElement | ICItemDivElement): void {
+    const textContent = div.childNodes[1].textContent;
     if (!textContent) throw new Error("Something went wrong!");
     const text = textContent.trim().toLowerCase();
     const elem = elementsMap[text];
     if (text.length > 30) {
-      instance.style.color = colors.proven;
+      div.style.color = colors.disproven;
     } else if (isDeadNumber(text)) {
-      instance.style.color = colors.disproven;
+      div.style.color = colors.disproven;
     } else if (elem && elem.color) {
-      instance.style.color = elem.color;
+      div.style.color = elem.color;
     }
   }
 
+  function handleInstanceColor(instance: ICInstanceDivElement): void {
+    return handleDivColor(instance);
+  }
+
   function handleItemColor(item: ICItemDivElement): void {
-    const textContent = item.childNodes[1].textContent;
-    if (!textContent) throw new Error("Something went wrong!");
-    const text = textContent.trim().toLowerCase();
-    const elem = elementsMap[text];
-    if (text.length > 30) {
-      item.style.color = colors.proven;
-    } else if (isDeadNumber(text)) {
-      item.style.color = colors.disproven;
-    } else if (elem && elem.color) {
-      item.style.color = elem.color;
-    }
+    return handleDivColor(item);
   }
 
   function handleNode(node: Node): void {
