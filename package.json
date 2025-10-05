@@ -10,10 +10,10 @@
     "infinibrowser": "^0.3.0"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.22",
+    "@types/bun": "^1.2.23",
     "@violentmonkey/types": "^0.2.2",
     "infinite-craft": "^0.0.7",
     "typescript": "5.9.2",
-    "wrangler": "^4.38.0"
+    "wrangler": "^4.42.0"
   }
 }
