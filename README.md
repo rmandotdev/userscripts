@@ -1,3 +1,3 @@
 # Userscripts
 
-https://userscripts.rman.dev
+<https://userscripts.rman.dev>
