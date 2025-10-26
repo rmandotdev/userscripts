@@ -12,7 +12,7 @@
       "build/*": ["./src/build/*"] // Map "build/*" to "./build/*"
     },
 
-    "types": ["infinite-craft/types", "@violentmonkey/types"],
+    "types": ["@infinite-craft/dom-types", "@violentmonkey/types"],
 
     // Max strictness
     "strict": true,
