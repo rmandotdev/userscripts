@@ -1,3 +1,5 @@
+import type { ICInstanceData } from "@infinite-craft/dom-types";
+
 const snappingGap = 8;
 const snappingDistance = 16;
 

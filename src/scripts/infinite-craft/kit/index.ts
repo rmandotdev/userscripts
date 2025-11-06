@@ -1,3 +1,5 @@
+import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-types";
+
 (function () {
   "use strict";
 
@@ -768,7 +770,10 @@
     const currentElement = splice(spellTech.tech, -1, element);
 
     // if there is no fancy deSpellStep stuff make it fancy
-    if (!deSpellSteps[0] || !deSpellSteps[0].tools) {
+    if (
+      !deSpellSteps[0] ||
+      !(deSpellSteps[0] as (string & { tools: undefined }) | DeSpellTech).tools
+    ) {
       deSpellSteps = [{ tools: deSpellSteps }] as DeSpellTech[];
     }
 

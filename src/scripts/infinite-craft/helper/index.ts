@@ -1,3 +1,10 @@
+import type {
+  IC_Sidebar_VUE,
+  ICItemData,
+  IC_DOM,
+  IC_Container_VUE,
+} from "@infinite-craft/dom-types";
+
 import { css, closeIconSrc, randomIcon, matchSorter } from "./utils";
 
 /*
@@ -57,7 +64,7 @@ function initSearchDebounce({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   const oldInput = v_sidebar.$refs.search;
   v_sidebar.$refs.search = oldInput.cloneNode(
     true
-  ) as ICSidebarInputInputElement;
+  ) as IC_DOM.SidebarInputInputElement;
   oldInput.parentNode.replaceChild(v_sidebar.$refs.search, oldInput);
   v_sidebar.$refs.search.addEventListener(
     "input",
@@ -357,7 +364,7 @@ function initPinnedContainer({
       const div = (
         pinnedContainer.querySelector(
           `.item[data-item-id="${e.id}"]`
-        ) as ICItemDivElement | null
+        ) as IC_DOM.ItemDivElement | null
       )?.parentNode;
       if (!div) continue;
       pinnedIds.delete(e.id);
