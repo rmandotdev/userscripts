@@ -1,8 +1,6 @@
 import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-types";
 
 (function () {
-  "use strict";
-
   interface ICWindow extends Window {
     convert(input: string): string;
     elementStorageSet: Set<string>;
@@ -11,7 +9,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     revive(input: string): Promise<void>;
   }
 
-  const icWindow = (unsafeWindow || window) as ICWindow; // change this to window if you are on mobile i guess
+  const icWindow = (unsafeWindow || window) as ICWindow;
 
   // Settings
 
@@ -41,29 +39,6 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       .join("\n");
   };
 
-  async function sendMessage(webhookUrl: string, message: string) {
-    try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        body: JSON.stringify({
-          content: message,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      } else {
-        return true;
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  }
-
-  // (["Delete", "Remove"], ["The", null], ["Mr."]) -> ["Delete The Mr.", "Delete Mr.", "Remove The Mr.", "Remove Mr." ]
   function generateToolCombinations(...arrays: (string | null)[][]) {
     // Helper to recursively combine arrays
     const recursion = (i: number, prefix: string): string[] => {
@@ -1097,29 +1072,6 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       console.time();
 
       await reviveElements(elems);
-
-      // == Patched by GameRoMan ==
-      const success = elems.reduce(
-        (acc, line) => (resultExists(line) ? acc + line + "\n" : acc),
-        ""
-      );
-      const fail = elems.reduce(
-        (acc, line) => (!resultExists(line) ? acc + line + "\n" : acc),
-        ""
-      );
-
-      console.log(`✅ Successfully Revived Words:\n${success}`);
-      console.log(`❌ Failed to Revive Words:\n${fail}`);
-
-      await sendMessage(
-        "https://webhooks.gameroman.workers.dev/send/kit",
-        `✅ Successfully Revived Words:\n${success}`.substr(0, 1900)
-      );
-      await sendMessage(
-        "https://webhooks.gameroman.workers.dev/send/kit",
-        `❌ Failed to Revive Words:\n${fail}`.substr(0, 1900)
-      );
-      // == Patched by GameRoMan ==
 
       icWindow.revivingProgress();
       console.timeEnd();
