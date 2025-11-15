@@ -425,7 +425,7 @@
     lastCombination = Date.now() + waitingDelay;
     await delay(waitingDelay);
 
-    const failCount = 0;
+    let failCount = 0;
     while (failCount < 3) {
       const recExists = recipeExists(first, second);
       if (recExists) {
