@@ -12,7 +12,7 @@ function getInstance(element: HTMLElement) {
   return unsafeWindow.IC.getInstances().find(
     (instance) =>
       instance.x == matches[1].replace(/\s/g, "") &&
-      instance.y == matches[2].replace(/\s/g, "")
+      instance.y == matches[2].replace(/\s/g, ""),
   );
 }
 

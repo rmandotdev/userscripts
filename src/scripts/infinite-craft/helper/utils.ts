@@ -867,7 +867,7 @@ interface Options<TItem> {
   threshold?: number;
   baseSort?: (a: RankingWithIndex<TItem>, b: RankingWithIndex<TItem>) => number;
   sorter?: (
-    matchedItems: RankingWithIndex<TItem>[]
+    matchedItems: RankingWithIndex<TItem>[],
   ) => RankingWithIndex<TItem>[];
   keepDiacritics?: boolean;
 }
@@ -901,7 +901,7 @@ const rankings = {
 
 function defaultBaseSortFn<TItem>(
   a: RankingWithIndex<TItem>,
-  b: RankingWithIndex<TItem>
+  b: RankingWithIndex<TItem>,
 ): number {
   return String(a.rankedValue).localeCompare(String(b.rankedValue));
 }
@@ -909,7 +909,7 @@ function defaultBaseSortFn<TItem>(
 export function matchSorter<TItem>(
   items: TItem[],
   value: string,
-  options: Options<TItem>
+  options: Options<TItem>,
 ): TItem[] {
   const {
     keys,
@@ -918,14 +918,14 @@ export function matchSorter<TItem>(
     sorter = (matchedItems) =>
       matchedItems.sort(
         (a: RankingWithIndex<TItem>, b: RankingWithIndex<TItem>) =>
-          sortRankedValues(a, b, baseSort)
+          sortRankedValues(a, b, baseSort),
       ),
   } = options;
 
   function reduceItemsToRanked(
     matches: RankingWithIndex<TItem>[],
     item: TItem,
-    index: number
+    index: number,
   ) {
     const rankingInfo = getHighestRanking(item, keys, value, options);
     const { rank, keyThreshold = threshold } = rankingInfo;
@@ -946,20 +946,20 @@ function getHighestRanking<TItem>(
   item: string,
   keys: undefined,
   value: string,
-  options: Options<TItem>
+  options: Options<TItem>,
 ): RankingWithIndex<TItem>;
 function getHighestRanking<TItem>(
   item: TItem,
   keys: string[],
   value: string,
-  options: Options<TItem>
+  options: Options<TItem>,
 ): RankingWithIndex<TItem>;
 
 function getHighestRanking<TItem>(
   item: string | TItem,
   keys: string[] | undefined,
   value: string,
-  options: Options<TItem>
+  options: Options<TItem>,
 ): Ranking {
   if (!keys) {
     const stringItem = item as string;
@@ -977,7 +977,7 @@ function getHighestRanking<TItem>(
     (
       { rank, rankedValue, keyIndex, keyThreshold }: Ranking,
       { itemValue, attributes },
-      i
+      i,
     ) => {
       let newRank = getMatchRanking(itemValue, value, options);
       let newRankedValue = rankedValue;
@@ -1000,14 +1000,14 @@ function getHighestRanking<TItem>(
       rank: rankings.NO_MATCH,
       keyIndex: -1,
       keyThreshold: options.threshold,
-    }
+    },
   );
 }
 
 function getMatchRanking<TItem>(
   testString: string,
   stringToRank: string,
-  options: Options<TItem>
+  options: Options<TItem>,
 ) {
   testString = prepareValueForComparison(testString, options);
   stringToRank = prepareValueForComparison(stringToRank, options);
@@ -1058,7 +1058,7 @@ function getClosenessRanking(testString: string, stringToRank: string) {
   function findMatchingCharacter(
     matchChar: string | undefined,
     string: string,
-    index: number
+    index: number,
   ): number | -1 {
     for (let j = index, J = string.length; j < J; j++) {
       const stringChar = string[j];
@@ -1098,7 +1098,7 @@ function getClosenessRanking(testString: string, stringToRank: string) {
 function sortRankedValues<TItem>(
   a: RankingWithIndex<TItem>,
   b: RankingWithIndex<TItem>,
-  baseSort: NonNullable<Options<TItem>["baseSort"]>
+  baseSort: NonNullable<Options<TItem>["baseSort"]>,
 ) {
   const aFirst = -1;
   const bFirst = 1;
@@ -1118,7 +1118,7 @@ function sortRankedValues<TItem>(
 
 function prepareValueForComparison<TItem>(
   value: string,
-  { keepDiacritics }: Options<TItem>
+  { keepDiacritics }: Options<TItem>,
 ) {
   value = `${value}`;
   if (!keepDiacritics) {
@@ -1131,7 +1131,7 @@ function getItemValues<
   TItem,
   TKey extends string,
   TValue,
-  TReturn extends string
+  TReturn extends string,
 >(item: TItem, key: TKey): TReturn[] {
   if (typeof key === "object") {
     key = key.key;
@@ -1191,7 +1191,7 @@ function getNestedValues<TItem>(path: string, item: TItem): TItem[] {
 
 function getAllValuesToRank<TItem>(
   item: TItem,
-  keys: string[]
+  keys: string[],
 ): {
   itemValue: string;
   attributes: any & {

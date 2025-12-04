@@ -46,7 +46,7 @@ exported.settings = settings;
 
 function debounce<T extends (...args: any[]) => void>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeout: NodeJS.Timeout | null = null;
 
@@ -63,14 +63,14 @@ function debounce<T extends (...args: any[]) => void>(
 function initSearchDebounce({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   const oldInput = v_sidebar.$refs.search;
   v_sidebar.$refs.search = oldInput.cloneNode(
-    true
+    true,
   ) as IC_DOM.SidebarInputInputElement;
   oldInput.parentNode.replaceChild(v_sidebar.$refs.search, oldInput);
   v_sidebar.$refs.search.addEventListener(
     "input",
     debounce(function (e) {
       if (!e.target.composing) v_sidebar.searchQuery = e.target.value;
-    }, settings.searchDebounceDelay)
+    }, settings.searchDebounceDelay),
   );
   v_sidebar.$refs.search.parentNode
     .querySelector(".sidebar-input-close")
@@ -82,7 +82,8 @@ function initSearchDebounce({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
     if (e.key === "Escape") {
       v_sidebar.searchQuery = "";
       v_sidebar.$refs.search.value = "";
-    } else if (document.activeElement?.nodeName !== "INPUT") v_sidebar.$refs.search.focus();
+    } else if (document.activeElement?.nodeName !== "INPUT")
+      v_sidebar.$refs.search.focus();
   });
 
   const oldFiltered = v_sidebar._computedWatchers.filteredElements.getter;
@@ -201,7 +202,7 @@ function initRecipeLookup({
   v_container.$el.appendChild(modal);
 
   ["wheel", "scroll"].forEach((x) =>
-    modal.addEventListener(x, (e) => e.stopImmediatePropagation(), true)
+    modal.addEventListener(x, (e) => e.stopImmediatePropagation(), true),
   );
 
   const idMap: Map<number, ICItemData> = new Map();
@@ -225,7 +226,7 @@ function initRecipeLookup({
     modalBody.innerHTML = "";
     if (!item.recipes || item.recipes.length < 1)
       modalBody.appendChild(
-        document.createTextNode("No recipes recorded for this element.")
+        document.createTextNode("No recipes recorded for this element."),
       );
     else
       for (const r of item.recipes) {
@@ -239,7 +240,7 @@ function initRecipeLookup({
         recipe.append(
           createItemElement(itemA),
           document.createTextNode("+"),
-          createItemElement(itemB)
+          createItemElement(itemB),
         );
         modalBody.appendChild(recipe);
       }
@@ -255,7 +256,7 @@ function initRecipeLookup({
         e.preventDefault();
         openRecipeModal(item.getAttribute("data-item-text"));
       }
-    })
+    }),
   );
 
   let hidden = false;
@@ -342,7 +343,7 @@ function initPinnedContainer({
 
     if (updateStorage) {
       const data = JSON.parse(
-        localStorage.getItem("pinned-elements") ?? "{}"
+        localStorage.getItem("pinned-elements") ?? "{}",
       ) as {
         [key: number]: Element[];
       };
@@ -363,7 +364,7 @@ function initPinnedContainer({
       if (!pinnedIds.has(e.id)) continue;
       const div = (
         pinnedContainer.querySelector(
-          `.item[data-item-id="${e.id}"]`
+          `.item[data-item-id="${e.id}"]`,
         ) as IC_DOM.ItemDivElement | null
       )?.parentNode;
       if (!div) continue;
@@ -374,13 +375,13 @@ function initPinnedContainer({
 
     if (updateStorage) {
       const data = JSON.parse(
-        localStorage.getItem("pinned-elements") ?? "{}"
+        localStorage.getItem("pinned-elements") ?? "{}",
       ) as {
         [key: number]: Element[];
       };
       const pinnedElements: Element[] = data[v_container.currSave] ?? [];
       data[v_container.currSave] = pinnedElements.filter(
-        (e) => !removed.has(e.id)
+        (e) => !removed.has(e.id),
       );
       localStorage.setItem("pinned-elements", JSON.stringify(data));
     }
@@ -396,7 +397,7 @@ function initPinnedContainer({
 
   function loadPinnedElements(saveId: number) {
     const pinnedElements = JSON.parse(
-        localStorage.getItem("pinned-elements") ?? "[]"
+        localStorage.getItem("pinned-elements") ?? "[]",
       ),
       curPinnedElements = pinnedElements[saveId];
     if (curPinnedElements?.length > 0) pinElements(curPinnedElements, false);
@@ -481,7 +482,7 @@ function initOldMouseControls() {
         interceptMouseEvent(e, "mousedown", { button: 1 });
       }
     },
-    true
+    true,
   );
 
   window.addEventListener(
@@ -491,7 +492,7 @@ function initOldMouseControls() {
       isCtrlDragging = false;
       interceptMouseEvent(e, "mouseup", { button: 1 });
     },
-    true
+    true,
   );
 }
 
@@ -557,8 +558,8 @@ function initRandomButton({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
       v_sidebar.searchResults.length > 0
         ? v_sidebar.searchResults
         : v_sidebar.filteredElements.length > 0
-        ? v_sidebar.filteredElements
-        : v_sidebar.items;
+          ? v_sidebar.filteredElements
+          : v_sidebar.items;
 
     //! filters out dead elements
     items = items.filter(
@@ -566,7 +567,7 @@ function initRandomButton({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
         !(
           (/^\d+$/.test(item.text) && item.text.length > 6) ||
           item.text.length > 30
-        )
+        ),
     );
 
     if (items.length < 1) return null;
@@ -600,12 +601,12 @@ function initRandomButton({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
           x: (window.innerWidth - v_sidebar.sidebarWidth) / 2,
           y: window.innerHeight / 2,
         },
-        (window.innerWidth - v_sidebar.sidebarWidth) / 6
+        (window.innerWidth - v_sidebar.sidebarWidth) / 6,
       ),
     });
     if (
       (instanceSound ??= unsafeWindow.Howler._howls.find((x) =>
-        x._src.endsWith("instance.mp3")
+        x._src.endsWith("instance.mp3"),
       ))
     ) {
       localRate += 0.1;
@@ -626,7 +627,7 @@ function initEvents({ v_container }: { v_container: IC_Container_VUE }) {
     dispatchEvent(
       new CustomEvent("ic-switchsave", {
         detail: { currentId: v_container.currSave, newId: id },
-      })
+      }),
     );
     return switchSave.apply(this, [id]);
   };
@@ -662,7 +663,7 @@ function init() {
         (v_sidebar._computedWatchers[k].addDep = function (...a) {
           // if (a[0].subs[0]?.value !== undefined) return addDep.apply(this, a);
           if (this.newDepIds.size < 65) return addDep.apply(this, a);
-        })
+        }),
     );
   }
   if (settings.randomButton > 0) initRandomButton(v);
@@ -680,7 +681,7 @@ function init() {
       if (
         this !== v_container.items ||
         !/function\((\w+?)\){return \1\.text\.toLowerCase\(\)===\w+?\.text\.toLowerCase\(\)}/.test(
-          f.toString()
+          f.toString(),
         )
       )
         return find.apply(this, [f]);

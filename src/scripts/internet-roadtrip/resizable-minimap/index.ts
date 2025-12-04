@@ -2,7 +2,7 @@
   const miniMap = document.getElementById("mini-map") as HTMLDivElement;
 
   const expandButton = document.querySelector(
-    ".expand-button"
+    ".expand-button",
   ) as HTMLDivElement;
   expandButton.style.display = "none";
 

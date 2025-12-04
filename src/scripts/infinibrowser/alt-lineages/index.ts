@@ -99,7 +99,7 @@ type LineageInfo = { steps: number; lineageId: string };
 
     const response = await fetch(
       `${API_URL}/submit?id=${encodeURIComponent(lineageId)}`,
-      { method: "POST" }
+      { method: "POST" },
     );
 
     try {
@@ -238,7 +238,7 @@ width: 475px;
 
     modalWrapper.appendChild(modal);
     (document.querySelector("body > main") as HTMLElement).appendChild(
-      modalWrapper
+      modalWrapper,
     );
   }
 
@@ -315,7 +315,7 @@ width: 475px;
     }
 
     (document.querySelector("body > main") as HTMLElement).appendChild(
-      altLineagesSection
+      altLineagesSection,
     );
   }
 

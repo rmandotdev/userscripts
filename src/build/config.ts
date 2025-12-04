@@ -40,7 +40,7 @@ export function defineConfig(config: { headers: HeaderConfig }): HeaderConfig {
 
 export function inferHeaderFields(
   scriptDir: string,
-  rootDir: string
+  rootDir: string,
 ): Partial<HeaderConfig> {
   const baseURL = "https://userscripts.rman.dev";
   if (!scriptDir.startsWith(rootDir)) {
@@ -58,7 +58,7 @@ export function inferHeaderFields(
 
 export function serializeHeader(
   config: HeaderConfig,
-  opts?: { scriptDir?: string; rootDir?: string }
+  opts?: { scriptDir?: string; rootDir?: string },
 ): { finalConfig: HeaderConfig; serializedHeader: string } {
   const inferred =
     opts?.scriptDir && opts?.rootDir

@@ -99,7 +99,7 @@
         count++;
       }
     }
-    return "Removed", count, "recipes with 'Nothing'";
+    return ("Removed", count, "recipes with 'Nothing'");
   };
   unsafeWindow.depthExplorerTimeSinceStart = function (element) {
     return "Time since start: " + (Date.now() - startTime) / 1000 + "s";
@@ -108,7 +108,7 @@
     return encounteredElements.has(element)
       ? makeLineage(
           encounteredElements.get(element),
-          element + " Lineage"
+          element + " Lineage",
         ).join(" ")
       : "This Element has not been made...";
   };
@@ -122,7 +122,7 @@
     content.push(
       generateLineageFromResults(baseElements, false)
         .map((recipe) => `${recipe[0]} + ${recipe[1]} = ${recipe[2]}`)
-        .join("\n") + `  // ${baseElements.length}`
+        .join("\n") + `  // ${baseElements.length}`,
     );
 
     const genCounts = Array(depth + 1).fill(0);
@@ -136,7 +136,7 @@
             index + 1
           } - ${count} Elements -> ${runningTotal} Total Elements`;
         })
-        .join("\n")
+        .join("\n"),
     );
 
     content.push(
@@ -145,25 +145,25 @@
           Array.from(encounteredElements, ([element, seed]) => [
             element,
             seed[0].length,
-          ])
+          ]),
         ),
         null,
-        2
-      )
+        2,
+      ),
     );
 
     console.time("Generate Lineages File");
     for (const [result, recipes] of recipesRes.entries()) {
       precomputedRecipesRes.set(
         result,
-        Array.from(recipes).map((x) => x.split("="))
+        Array.from(recipes).map((x) => x.split("=")),
       );
     }
 
     content.push(
       Array.from(encounteredElements.entries())
         .map(([element, lineage]) => makeLineage(lineage, element).join(" "))
-        .join("\n\n")
+        .join("\n\n"),
     );
 
     precomputedRecipesRes.clear();
@@ -173,7 +173,7 @@
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `${baseElements[baseElements.length - 1]} Seed - ${Math.floor(
-      (processedSeeds / totalSeeds) * 100
+      (processedSeeds / totalSeeds) * 100,
     )}p gen ${depth + 1}.txt`;
 
     a.click();
@@ -184,10 +184,13 @@
     GM_setValue("recipesIng", recipesIng);
     console.log("Saved Recipes");
   });
-  setInterval(() => {
-    GM_setValue("recipesIng", recipesIng);
-    console.log("Saved Recipes");
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      GM_setValue("recipesIng", recipesIng);
+      console.log("Saved Recipes");
+    },
+    5 * 60 * 1000,
+  );
 
   let processedSeeds = 0;
   let totalSeeds = 0;
@@ -208,7 +211,7 @@
         totalSeeds,
         "seeds processed -",
         Math.round((processedSeeds / totalSeeds) * 100 * 100) / 100,
-        "%"
+        "%",
       );
     }
     const interval = setInterval(() => {
@@ -267,8 +270,8 @@
                 console.log(
                   ...makeLineage(
                     encounteredElements.get(result),
-                    result + " Lineage"
-                  )
+                    result + " Lineage",
+                  ),
                 );
               }
             }
@@ -315,7 +318,7 @@
         depthLists[depth].size,
         "\nElements:",
         encounteredElements.size,
-        encounteredElements
+        encounteredElements,
       );
       if (depth > stopAfterDepth - 2) return "Done.";
 
@@ -333,7 +336,7 @@
         .map((lineage) =>
           generateLineageFromResults(lineage)
             .map((recipe) => `\n${recipe[0]} + ${recipe[1]} = ${recipe[2]}`)
-            .join("")
+            .join(""),
         )
         .join("\n ..."),
     ];
@@ -341,9 +344,9 @@
 
   function generateLineageFromResults(results, allowBaseElements = true) {
     const toUse = new Set(
-      allowBaseElements ? [...fullBaseSet] : baseBaseElements
+      allowBaseElements ? [...fullBaseSet] : baseBaseElements,
     );
-    const toAdd = new Set([...results]);
+    const toAdd = new Set(results);
     let recipe = [];
 
     // required to make different cases work THIS WAS A PAIN TO CODE
@@ -362,13 +365,13 @@
             (!correctCaseMap.has(first) ||
               correctCaseMap.get(first) !== result) &&
             (!correctCaseMap.has(second) ||
-              correctCaseMap.get(second) !== result)
+              correctCaseMap.get(second) !== result),
         );
 
         if (validRecipe) {
           recipe.push([
             ...validRecipe.map((x) =>
-              correctCaseMap.has(x) ? correctCaseMap.get(x) : x
+              correctCaseMap.has(x) ? correctCaseMap.get(x) : x,
             ),
             result,
           ]);
@@ -398,7 +401,7 @@
   async function processCombinations(combinations) {
     const results = new Set();
     combinations = combinations.map(([first, second]) =>
-      [first.icCase(), second.icCase()].sort()
+      [first.icCase(), second.icCase()].sort(),
     );
 
     for (const [first, second] of combinations) {
@@ -414,13 +417,14 @@
     return results;
   }
 
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const delay = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
   let lastCombination = Date.now();
 
   async function combine(first, second) {
     const waitingDelay = Math.max(
       0,
-      combineTime - (Date.now() - lastCombination)
+      combineTime - (Date.now() - lastCombination),
     );
     lastCombination = Date.now() + waitingDelay;
     await delay(waitingDelay);
@@ -437,7 +441,7 @@
       const response =
         await unsafeWindow.$nuxt.$root.$children[1].$children[0].$children[0].getCraftResponse(
           { text: first },
-          { text: second }
+          { text: second },
         );
       if (response && response.result) {
         const result = response.result;
@@ -460,7 +464,7 @@
     elementsSet.add(element.result);
 
     unsafeWindow.$nuxt._route.matched[0].instances.default.elements.push(
-      element
+      element,
     );
     element.text = element.result;
     element.discovered = element.isNew;
@@ -494,7 +498,7 @@
         for (const mutation of mutations) {
           if (mutation.type === "childList") {
             const anchor = Array.from(mutation.addedNodes).find(
-              (node) => node.download === "infinitecraft.json"
+              (node) => node.download === "infinitecraft.json",
             );
             if (anchor) return fetch(anchor.href).then(resolve);
           }
@@ -502,7 +506,7 @@
       });
       observer.observe(document.body, { childList: true, subtree: true });
       handleClick.call(
-        document.querySelector(".setting[for=import-save] + .setting")
+        document.querySelector(".setting[for=import-save] + .setting"),
       );
       setTimeout(() => {
         observer.disconnect();

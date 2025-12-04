@@ -1,9 +1,9 @@
 import { build } from "bun";
 
-import * as path from "path";
-import * as fs from "fs/promises";
+import * as path from "node:path";
+import * as fs from "node:fs/promises";
 
-import { pathToFileURL, fileURLToPath } from "url";
+import { pathToFileURL, fileURLToPath } from "node:url";
 
 import { serializeHeader, type HeaderConfig } from "./config";
 
@@ -40,7 +40,7 @@ async function copyDir(src: string, dest: string) {
       const stat = await fs.stat(realPath);
       if (stat.isDirectory()) {
         logVerbose(
-          `🔗 Recursing into symlinked directory: ${srcPath} → ${realPath}`
+          `🔗 Recursing into symlinked directory: ${srcPath} → ${realPath}`,
         );
         await copyDir(realPath, destPath);
       } else if (stat.isFile()) {
@@ -51,7 +51,7 @@ async function copyDir(src: string, dest: string) {
       }
     } else {
       logVerbose(
-        `⚠️ Skipping unknown entry (not file/dir/symlink): ${srcPath}`
+        `⚠️ Skipping unknown entry (not file/dir/symlink): ${srcPath}`,
       );
     }
   }
@@ -66,7 +66,7 @@ async function buildUserscript(dir: string): Promise<
 > {
   const configPath = path.join(dir, CONFIG_FILE_NAME);
   const mainTSPath = (await fs.readdir(dir)).find(
-    (f) => f.startsWith("index.") && (f.endsWith(".ts") || f.endsWith(".tsx"))
+    (f) => f.startsWith("index.") && (f.endsWith(".ts") || f.endsWith(".tsx")),
   );
   if (!mainTSPath) {
     console.warn(`⚠️ No index.ts[x] found in ${dir}, skipping`);

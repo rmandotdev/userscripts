@@ -30,15 +30,13 @@ interface IB_HTMLDivElement_Item extends HTMLDivElement {
 
 interface IB_HTMLDivElement_ResultItem extends IB_HTMLDivElement_Item {}
 
-interface IB_HTMLDivElement_TargetItem extends IB_HTMLDivElement_Item {}
-
 interface IB_HTMLLIElement_Step extends HTMLLIElement {
   children: HTMLCollection &
     [
       HTMLSpanElement,
       IB_HTMLDivElement_Item,
       IB_HTMLDivElement_Item,
-      IB_HTMLDivElement_ResultItem
+      IB_HTMLDivElement_ResultItem,
     ];
 }
 
@@ -156,7 +154,7 @@ function $initInfiniteCraft() {
     elementCount = API.items.length;
     GM.setValue(
       "elements",
-      API.items.map((x) => x.text.toLowerCase()).join("\x00")
+      API.items.map((x) => x.text.toLowerCase()).join("\x00"),
     );
   };
 

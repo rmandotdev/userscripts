@@ -44,7 +44,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     const recursion = (i: number, prefix: string): string[] => {
       if (i === arrays.length) return [prefix.trim()]; // Base case: return the final string
       return arrays[i]!.flatMap((option) =>
-        recursion(i + 1, option ? `${prefix} ${option}` : prefix)
+        recursion(i + 1, option ? `${prefix} ${option}` : prefix),
       );
     };
     return recursion(0, ""); // Start combining from the first group
@@ -119,7 +119,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ...generateToolCombinations(
         ["Remove", "Removes", "Subtract", "Delete", "Without"],
         [null, "The"],
-        ["Mr.", "Mr", "Mister"]
+        ["Mr.", "Mr", "Mister"],
       ),
       // -> [ "Delete The Mr.", "Delete The Mr", "Delete The Mister", "Delete Mr.", "Delete Mr", "Delete Mister", "Remove The Mr.", "Remove The Mr", "Remove The Mister", "Remove Mr.", … ]
       '"remove Mr."',
@@ -132,7 +132,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ...generateToolCombinations(
         ["Delete", "Remove", "Without"],
         ["The", null],
-        ["Abcd", "Abcd.", "'abcd'"]
+        ["Abcd", "Abcd.", "'abcd'"],
       ),
       '"remove Abcd"',
       "Mr. Delete The Abcd",
@@ -142,7 +142,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
         ["Delete", "Remove", "Without", "Deletes"],
         [null, "The"],
         [null, "Word"],
-        ["Hi", "'hi'"]
+        ["Hi", "'hi'"],
       ),
       '"remove The Hi"',
       '"delete The Hi"',
@@ -156,14 +156,14 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ...generateToolCombinations(
         ["Delete", "Remove"],
         ["The", null],
-        ["Hi Mr.", "Hi Mr", "Hi Mrs."]
+        ["Hi Mr.", "Hi Mr", "Hi Mrs."],
       ),
       '"delete The Hi Mr. "',
     ],
     removeThe: [
       ...generateToolCombinations(
         ["Remove", "Delete", "Without"],
-        ["The The", "The", "The The The"]
+        ["The The", "The", "The The The"],
       ),
       "Delete First Word",
       "Remove First Word",
@@ -175,18 +175,18 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ...generateToolCombinations(
         ["Delete", "Remove", "Without"],
         ["The", null],
-        ["Quotation Mark", "Quotation Marks"]
+        ["Quotation Mark", "Quotation Marks"],
       ),
     ],
     removeHyphens: [
       ...generateToolCombinations(
         ["Delete", "Remove", "Without"],
         ["The", null],
-        ["Hyphen", "Hyphens"]
+        ["Hyphen", "Hyphens"],
       ),
       ...generateToolCombinations(
         ["Replace Hyphen With"],
-        ["Empty", "Spaces", "Spacing", "Nothing"]
+        ["Empty", "Spaces", "Spacing", "Nothing"],
       ),
       "With Spacing",
       "With Spaces",
@@ -197,7 +197,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
         ["Delete", "Remove", "Without"],
         [null, "The"],
         ["First"],
-        ["Character", "Letter", "Characters", "Letters", "Deleter"]
+        ["Character", "Letter", "Characters", "Letters", "Deleter"],
       ),
     ],
     removeChar: (char: string) => [
@@ -205,7 +205,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
         ["Delete", "Remove", "Without"],
         ["The", null],
         [null, "Letter", "Character"],
-        [char, `"${char}"`, `'${char}'`]
+        [char, `"${char}"`, `'${char}'`],
       ),
       `String.remove(${char})`,
       `String.remove("${char}")`,
@@ -240,7 +240,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ...generateToolCombinations(
         ["Prepend", "Prepends"],
         ["The", null],
-        ["Mr", "Mr."]
+        ["Mr", "Mr."],
       ),
       "Mr. &",
       "Mr. .",
@@ -308,7 +308,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ...generateToolCombinations(
         ["Prepend"],
         ["Left", "Opening", null],
-        ["Parenthesis", "Parentheses", "Bracket", "Braces"]
+        ["Parenthesis", "Parentheses", "Bracket", "Braces"],
       ),
       "Prepend " + splice(parent, -1, "parenthesis"),
       "Prepend " + splice(parent, -1, "parentheses"),
@@ -591,7 +591,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
         console.log(
           `${processedElements}/${elements.length} elements processed (${
             Math.round((processedElements / elements.length) * 100 * 100) / 100
-          }%)`
+          }%)`,
         );
     }, 30 * 1000); // 30 seconds
 
@@ -646,7 +646,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
   async function chunkRevive(
     spellTech: SpellTech,
     element: string,
-    realElement: string
+    realElement: string,
   ) {
     const goal = splice(spellTech.tech, -1, element);
     let currentWordStart = 0;
@@ -715,17 +715,17 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
           [
             ...allStringsFromAUntilB(
               currentSpelling.slice(1, -1),
-              goal.slice(1, -1)
+              goal.slice(1, -1),
             )
               .slice(1)
               .map(
                 (x) =>
                   spellTech.tech[0] +
                   x +
-                  spellTech.tech[spellTech.tech.length - 1]
+                  spellTech.tech[spellTech.tech.length - 1],
               ),
             realElement,
-          ]
+          ],
         );
       }
       if (resultExists(realElement) || resultExists(goal)) return;
@@ -738,7 +738,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
   async function deSpell(
     spellTech: SpellTech,
     element: string,
-    realElement: string
+    realElement: string,
   ) {
     let deSpellSteps = spellTech.deSpell(element);
 
@@ -767,7 +767,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
         await tryCombine(
           [start],
           deSpellStep.tools as string[],
-          [goal, realElement].filter(Boolean)
+          [goal, realElement].filter(Boolean),
         );
         addFailedSpelling(realElement, start);
       }
@@ -798,8 +798,8 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       ];
       console.log(
         `Failed to spell ${element} with all kinds of tools... I guess i'm not powerful enough :(\nThese were the failed spellings:\n${failedSpellings.join(
-          "\n"
-        )}`
+          "\n",
+        )}`,
       );
       // if (addFailedSpellingsToElements) failedSpellings.forEach((x) => addElementToStorage(x));
     }
@@ -807,7 +807,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
 
   function makeLineage(
     element: string,
-    visited: Set<string> = new Set()
+    visited: Set<string> = new Set(),
   ): string {
     element = nealCase(element);
     if (recipesRes.has(element)) {
@@ -836,7 +836,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
   async function tryCombine(
     inputs1: string[],
     inputs2: string[],
-    expected: (string | null)[]
+    expected: (string | null)[],
   ): Promise<string | boolean> {
     for (let i = 0; i < expected.length; i++) {
       if (resultExists(expected[i]!)) return true;
@@ -865,7 +865,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
 
   async function combine(
     first: string,
-    second: string
+    second: string,
   ): Promise<string | undefined> {
     // console.log("combine", first, "+", second);
     if (!first || !second) return;
@@ -885,7 +885,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     const promise = (async () => {
       const waitingDelay = Math.max(
         0,
-        combineTime - (Date.now() - lastCombination)
+        combineTime - (Date.now() - lastCombination),
       );
       lastCombination = Date.now() + waitingDelay;
       await delay(waitingDelay);
@@ -1088,7 +1088,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       console.groupEnd();
 
       const successMessage = processedElementsList.filter((x) =>
-        resultExists(x)
+        resultExists(x),
       );
       const groupSuccess = [
         `%cSuccessfully Revived Elements: (${successMessage.length})`,
@@ -1099,7 +1099,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       console.groupEnd();
 
       const failedMessage = processedElementsList.filter(
-        (x) => !resultExists(x)
+        (x) => !resultExists(x),
       );
       const groupFailed = [
         `%cFailed to Revive Elements: (${failedMessage.length})`,

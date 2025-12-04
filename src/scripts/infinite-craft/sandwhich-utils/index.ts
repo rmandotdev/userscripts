@@ -82,9 +82,9 @@ import { addCss } from "./css";
   const settings = createReactiveProxy(
     mergeSettings(
       GM_getValue<Settings>("sandwhich_settings", {} as Settings),
-      defaultSettings
+      defaultSettings,
     ),
-    saveSettings
+    saveSettings,
   );
   saveSettings(); // Initial save
 
@@ -174,7 +174,7 @@ import { addCss } from "./css";
         text: string,
         x: number,
         y: number,
-        rows?: number
+        rows?: number,
       ) => unknown;
     };
     tabs: {
@@ -202,7 +202,7 @@ import { addCss } from "./css";
       refreshVisualTabButtons: () => void;
       showContextMenu: (
         event: MouseEvent,
-        options: [string, unknown][]
+        options: [string, unknown][],
       ) => void;
     };
     unicode: {
@@ -277,33 +277,33 @@ import { addCss } from "./css";
       update: function () {
         document.documentElement.style.setProperty(
           "--sandwhich-sel-border",
-          `${settings.selection.borderWidth}px ${settings.selection.borderStyle} ${settings.selection.customColor}`
+          `${settings.selection.borderWidth}px ${settings.selection.borderStyle} ${settings.selection.customColor}`,
         );
         document.documentElement.style.setProperty(
           "--sandwhich-sel-background",
-          `hsl(from ${settings.selection.customColor} h s l / 0.3)`
+          `hsl(from ${settings.selection.customColor} h s l / 0.3)`,
         );
         document.documentElement.style.setProperty(
           "--sandwhich-sel-scale",
-          `${settings.selection.scale}%`
+          `${settings.selection.scale}%`,
         );
 
         const chromaSpeed = 10 / settings.selection.chromaSpeed;
         document.documentElement.style.setProperty(
           "--sandwhich-sel-chroma-animation",
           `sandwhich-chromaCycleBorder ${Math.abs(
-            chromaSpeed
+            chromaSpeed,
           )}s infinite linear${chromaSpeed < 0 ? " reverse" : ""}, ` +
             `sandwhich-chromaCycleBackground ${Math.abs(
-              chromaSpeed
+              chromaSpeed,
             )}s infinite linear${chromaSpeed < 0 ? " reverse" : ""}` +
             `${
               settings.selection.borderWidth >= 30
                 ? `, sandwhich-rotateBorder ${Math.abs(
-                    chromaSpeed
+                    chromaSpeed,
                   )}s infinite linear${chromaSpeed < 0 ? " reverse" : ""}`
                 : ""
-            }`
+            }`,
         );
       },
     },
@@ -355,7 +355,7 @@ import { addCss } from "./css";
           ) {
             const hoveredElement = document.elementFromPoint(
               this.mouseData.x,
-              this.mouseData.y
+              this.mouseData.y,
             );
 
             if (!hoveredElement) {
@@ -367,21 +367,21 @@ import { addCss } from "./css";
               copyText = hoveredElement.childNodes[1].textContent!.trim();
             } else if (hoveredElement.matches(".instance")) {
               const selectedInstances = unsafeWindow.IC.getInstances().filter(
-                (x) => x.element.classList.contains("instance-selected")
+                (x) => x.element.classList.contains("instance-selected"),
               );
               if (selectedInstances.length <= 1) {
                 copyText = hoveredElement.childNodes[1].textContent!.trim();
               } else {
                 let { x, y } = unsafeWindow.IC.screenToWorld(
                   this.mouseData.x,
-                  this.mouseData.y
+                  this.mouseData.y,
                 );
                 copyText = selectedInstances
                   .map(
                     (element) =>
                       `${element.text}  ${(element.x - x).toFixed(2)} ${(
                         element.y - y
-                      ).toFixed(2)}`
+                      ).toFixed(2)}`,
                   )
                   .join("\n");
               }
@@ -446,7 +446,7 @@ import { addCss } from "./css";
           ghostElement.element.addEventListener(
             "mousedown",
             onlyAllowRightClick,
-            { capture: true }
+            { capture: true },
           );
 
           this.ghostElements.add(element);
@@ -470,7 +470,7 @@ import { addCss } from "./css";
               (x) =>
                 x.disabled === true &&
                 x.itemId === -1 &&
-                x.text === response.text
+                x.text === response.text,
             );
             if (updateInstances.length > 0)
               setTimeout(() => {
@@ -478,7 +478,7 @@ import { addCss } from "./css";
                 for (const instance of updateInstances) {
                   const { x, y } = unsafeWindow.IC.worldToScreen(
                     instance.x,
-                    instance.y
+                    instance.y,
                   );
                   modsSpawn.spawnInstance(response.text, x, y);
                 }
@@ -514,7 +514,7 @@ import { addCss } from "./css";
               this.spawnInstance(
                 part1,
                 this.mouseData.x + x,
-                this.mouseData.y + y
+                this.mouseData.y + y,
               );
               continue;
             }
@@ -543,7 +543,7 @@ import { addCss } from "./css";
               this.spawnInstance(
                 element,
                 this.mouseData.x + column + i * actualColumnDist,
-                this.mouseData.y + row
+                this.mouseData.y + row,
               );
             });
             continue;
@@ -552,14 +552,14 @@ import { addCss } from "./css";
           this.spawnInstance(
             line,
             this.mouseData.x + column,
-            this.mouseData.y + row
+            this.mouseData.y + row,
           );
         }
       },
 
       handleSpawnFromSelected: function () {
         const selectedInstances = unsafeWindow.IC.getInstances().filter((x) =>
-          x.element.classList.contains("instance-selected")
+          x.element.classList.contains("instance-selected"),
         );
         if (selectedInstances.length >= 2) {
           alert(`More than 1 Element is selected: ${selectedInstances.length}`);
@@ -571,7 +571,7 @@ import { addCss } from "./css";
           if (/[a-zA-Z]/.test(selectedInstance.text)) {
             const { x, y } = unsafeWindow.IC.worldToScreen(
               selectedInstance.x,
-              selectedInstance.y
+              selectedInstance.y,
             );
             if (this.handleSpawnAlphabet(selectedInstance.text, x, y)) {
               // successfully spawned alphabet
@@ -580,7 +580,7 @@ import { addCss } from "./css";
           } else if (Array.from(selectedInstance.text).length === 1) {
             const { x, y } = unsafeWindow.IC.worldToScreen(
               selectedInstance.x,
-              selectedInstance.y
+              selectedInstance.y,
             );
             if (this.handleSpawnUnicode(selectedInstance.text, x, y)) {
               // successfully spawned unicodes
@@ -590,13 +590,13 @@ import { addCss } from "./css";
         } else {
           // no selectedInstance, let user decide
           let input = prompt(
-            `You didn't have anything selected, so here is a generic menu.\nSelect one:\n a - Spawn Alphabet(s)\n u - Spawn Unicode(s)`
+            `You didn't have anything selected, so here is a generic menu.\nSelect one:\n a - Spawn Alphabet(s)\n u - Spawn Unicode(s)`,
           );
           if (input?.toLowerCase() === "a") {
             let promptAlphabets = prompt(
               `Generic Alphabet Spawn:` +
                 `\n - Enter Alphabets separated by Double Spaces (e.g. 'X   .x   _x   X!)` +
-                `\nOR\n - Enter ALL to spawn ALL of your alphabets (might lag)`
+                `\nOR\n - Enter ALL to spawn ALL of your alphabets (might lag)`,
             );
             if (!promptAlphabets) {
               throw new Error("promptAlphabets");
@@ -610,18 +610,18 @@ import { addCss } from "./css";
                 this.handleSpawnAlphabet(
                   x,
                   this.mouseData.x + (i * settings.spawn.columnDistance) / 2,
-                  this.mouseData.y
-                )
+                  this.mouseData.y,
+                ),
               );
           }
           if (input?.toLowerCase() === "u") {
             let promptCodepoint =
               prompt(
-                `Generice Unicode Spawn:\n - Enter a Unicode Codepoint or a Unicode Character! (e.g. U+0069 or 0069 or i)`
+                `Generice Unicode Spawn:\n - Enter a Unicode Codepoint or a Unicode Character! (e.g. U+0069 or 0069 or i)`,
               ) ?? "";
             const maybeNum = parseInt(
               promptCodepoint.replace(/^[Uu]\+/, ""),
-              16
+              16,
             );
             if (!isNaN(maybeNum)) {
               promptCodepoint = String.fromCodePoint(maybeNum);
@@ -630,7 +630,7 @@ import { addCss } from "./css";
               this.handleSpawnUnicode(
                 promptCodepoint,
                 this.mouseData.x,
-                this.mouseData.y
+                this.mouseData.y,
               );
             else if (promptCodepoint !== "")
               alert(`${promptCodepoint} is not valid :(`);
@@ -644,7 +644,7 @@ import { addCss } from "./css";
             if (/[a-zA-Z]/.test(char)) map.push([char, index]);
             return map;
           },
-          []
+          [],
         );
 
         const positionsMessage = choices
@@ -655,8 +655,8 @@ import { addCss } from "./css";
             ? 0
             : Number(
                 prompt(
-                  `Alphabet Spawn: ${text}\nWhich letter do you want to cycle?\n${positionsMessage}`
-                )
+                  `Alphabet Spawn: ${text}\nWhich letter do you want to cycle?\n${positionsMessage}`,
+                ),
               ) - 1;
         const choice = choices[choiceIndex];
 
@@ -673,7 +673,7 @@ import { addCss } from "./css";
             this.spawnInstance(
               newElement,
               x,
-              y + i * settings.spawn.rowDistance
+              y + i * settings.spawn.rowDistance,
             );
           }
           return true;
@@ -688,12 +688,12 @@ import { addCss } from "./css";
             if (letters?.length === 1) {
               const key = x.text.replace(
                 letters[0],
-                letters[0] === letters[0].toLowerCase() ? "x" : "X"
+                letters[0] === letters[0].toLowerCase() ? "x" : "X",
               );
               total[key] = (total[key] || 0) + 1;
             }
             return total;
-          }, {})
+          }, {}),
         );
         return entries
           .filter(([key, value]) => value >= minCount)
@@ -710,9 +710,9 @@ import { addCss } from "./css";
                 .toString(16)
                 .padStart(
                   4,
-                  "0"
-                )}\nHow many rows after this element should it spawn?`
-            )
+                  "0",
+                )}\nHow many rows after this element should it spawn?`,
+            ),
           );
         if (!rows) return;
 
@@ -726,7 +726,7 @@ import { addCss } from "./css";
             this.spawnInstance(
               String.fromCodePoint(charCode),
               x + (step * settings.spawn.columnDistance) / 2,
-              y + row * settings.spawn.rowDistance
+              y + row * settings.spawn.rowDistance,
             );
           }
         }
@@ -805,7 +805,7 @@ import { addCss } from "./css";
         if (container) container.remove();
 
         const contextMenu = document.getElementById(
-          "sandwhich-tab-contextmenu"
+          "sandwhich-tab-contextmenu",
         );
         if (contextMenu) contextMenu.remove();
 
@@ -820,7 +820,7 @@ import { addCss } from "./css";
       updateColors: function () {
         document.documentElement.style.setProperty(
           "--sandwhich-tab-color",
-          settings.tabs.customColor
+          settings.tabs.customColor,
         );
       },
 
@@ -829,7 +829,7 @@ import { addCss } from "./css";
           unsafeWindow.IC.getInstances().map<TabDataElement>((instance) => {
             const { x, y } = unsafeWindow.IC.worldToScreen(
               instance.x,
-              instance.y
+              instance.y,
             );
             return [instance.text, x, y];
           });
@@ -918,12 +918,12 @@ import { addCss } from "./css";
           setTimeout(() => (sizer.style.width = "0"), 0);
 
           const tabList = document.querySelector(
-            "#sandwhich-tab-list"
+            "#sandwhich-tab-list",
           ) as HTMLDivElement;
           tabList.insertBefore(
             sizer,
             this.getVisualTabFromId(index) ??
-              tabList.querySelector(".addButton")
+              tabList.querySelector(".addButton"),
           );
         }
 
@@ -943,7 +943,7 @@ import { addCss } from "./css";
 
       renameTab: function (index) {
         const newName = prompt(
-          `Enter a new name! (${this.tabData.tabs[index]!.name})`
+          `Enter a new name! (${this.tabData.tabs[index]!.name})`,
         );
         if (newName) {
           this.tabData.tabs[index]!.name = newName;
@@ -989,7 +989,7 @@ import { addCss } from "./css";
               this.addTab(undefined, tab);
             } catch (error) {
               console.error(
-                `Error parsing JSON file: ${(error as Error).message}`
+                `Error parsing JSON file: ${(error as Error).message}`,
               );
             } finally {
               document.body.removeChild(input); // Clean up input after processing
@@ -1007,12 +1007,12 @@ import { addCss } from "./css";
 
       getVisualTabFromId: (index) =>
         document.querySelector(
-          `.sandwhich-tab[data-tab-id="${index}"]`
+          `.sandwhich-tab[data-tab-id="${index}"]`,
         ) as HTMLButtonElement,
 
       createVisualTabButton: function (index, name) {
         const tabList = document.querySelector(
-          "#sandwhich-tab-list"
+          "#sandwhich-tab-list",
         ) as HTMLDivElement;
         const tabButton = document.createElement("button");
         tabButton.className = "sandwhich-tab";
@@ -1039,7 +1039,7 @@ import { addCss } from "./css";
         });
         tabButton.addEventListener("dragleave", (e) => {
           const targetTab = (e.target as HTMLButtonElement).closest(
-            ".sandwhich-tab"
+            ".sandwhich-tab",
           );
           if (targetTab) targetTab.classList.remove("drag-over");
         });
@@ -1047,7 +1047,7 @@ import { addCss } from "./css";
           e.preventDefault();
           const draggedTab = this.tabData.tabs.splice(
             this.draggedTabIndex,
-            1
+            1,
           )[0]!;
           this.tabData.tabs.splice(index, 0, draggedTab);
           this.tabData.currTab = index;
@@ -1079,18 +1079,18 @@ import { addCss } from "./css";
 
       refreshVisualTabButtons: function () {
         const tabList = document.querySelector(
-          "#sandwhich-tab-list"
+          "#sandwhich-tab-list",
         ) as HTMLDivElement;
         // clear all children
         tabList.innerHTML = "";
         this.tabData.tabs.forEach((tab, index) =>
-          this.createVisualTabButton(index, tab.name)
+          this.createVisualTabButton(index, tab.name),
         );
       },
 
       showContextMenu: function (event, options) {
         const contextMenu = document.querySelector(
-          "#sandwhich-tab-contextmenu"
+          "#sandwhich-tab-contextmenu",
         ) as HTMLDivElement;
         contextMenu.innerHTML = "";
 
@@ -1113,7 +1113,7 @@ import { addCss } from "./css";
         document.addEventListener(
           "click",
           (clickEvent) => (contextMenu.style.display = "none"),
-          { once: true, capture: true }
+          { once: true, capture: true },
         );
       },
     },
@@ -1241,7 +1241,7 @@ import { addCss } from "./css";
             modsUnicode.unicodeElements &&
             modsUnicode.isUnicode(response.text) &&
             !modsUnicode.unicodeElements.find(
-              ({ text }) => text === response.text
+              ({ text }) => text === response.text,
             )
           ) {
             modsUnicode.unicodeElements.push(response);
@@ -1260,12 +1260,12 @@ import { addCss } from "./css";
       disableCheckbox: function () {
         (
           document.querySelector(
-            ".sandwhich-unicode-items-inner"
+            ".sandwhich-unicode-items-inner",
           ) as HTMLDivElement
         ).innerHTML = "";
         (
           document.querySelector(
-            ".sandwhich-unicode-header-label"
+            ".sandwhich-unicode-header-label",
           ) as HTMLLabelElement
         ).textContent = `Unicode Search`;
         this.unicodeElements = null;
@@ -1344,11 +1344,11 @@ import { addCss } from "./css";
         if (this.recipeModalObserver) return;
 
         const modalElement = document.querySelector<HTMLDialogElement>(
-          "dialog.recipe-modal"
+          "dialog.recipe-modal",
         );
         if (!modalElement) {
           console.error(
-            "Helper not installed, can't add a subtitle to the recipe modal..."
+            "Helper not installed, can't add a subtitle to the recipe modal...",
           );
           return;
         }
@@ -1359,7 +1359,7 @@ import { addCss } from "./css";
         subtitleElement.addEventListener("click", () => {
           if (
             subtitleElement.classList.contains(
-              "sandwhich-unicode-info-expanded"
+              "sandwhich-unicode-info-expanded",
             )
           ) {
             return;
@@ -1418,7 +1418,7 @@ import { addCss } from "./css";
               console.error(
                 "Failed to load Unicode data:",
                 response.status,
-                response.statusText
+                response.statusText,
               );
           },
           onerror: (error) => {
@@ -1435,7 +1435,7 @@ import { addCss } from "./css";
             const [codePoint, name, category] = line.split(";", 3) as [
               string,
               string,
-              string
+              string,
             ];
             acc[codePoint] = [name, category];
             return acc;
@@ -1467,7 +1467,7 @@ import { addCss } from "./css";
 
         console.time("updateUnicodeElements");
         this.unicodeElements = unsafeWindow.IC.getItems().filter(({ text }) =>
-          this.isUnicode(text)
+          this.isUnicode(text),
         );
         this.updateUnicodeElementsSort();
         this.performSearch();
@@ -1492,7 +1492,7 @@ import { addCss } from "./css";
           const sampleItem = document.querySelector(".item");
           if (!sampleItem) {
             console.warn(
-              "SandwichMod: No '.item' element found to determine scoped attribute."
+              "SandwichMod: No '.item' element found to determine scoped attribute.",
             );
           }
 
@@ -1541,7 +1541,7 @@ import { addCss } from "./css";
         const modsUnicode = this;
         this.updateSearchTimeoutId = window.setTimeout(
           () => modsUnicode.performSearch(),
-          settings.unicode.searchDebounceDelay
+          settings.unicode.searchDebounceDelay,
         );
       },
 
@@ -1552,7 +1552,7 @@ import { addCss } from "./css";
           document.querySelector("#sidebar").__vue__.searchQuery;
         const upperSearchQuery = searchQuery.toUpperCase();
         const itemsContainer = document.querySelector(
-          ".sandwhich-unicode-items-inner"
+          ".sandwhich-unicode-items-inner",
         ) as HTMLDivElement;
         itemsContainer.innerHTML = "";
 
@@ -1590,7 +1590,7 @@ import { addCss } from "./css";
 
           if (isMatch && added++ < amount) {
             fragment.appendChild(
-              this.createItemElement(element, !settings.unicode.searchCompact)
+              this.createItemElement(element, !settings.unicode.searchCompact),
             );
           }
         }
@@ -1598,7 +1598,7 @@ import { addCss } from "./css";
         itemsContainer.appendChild(fragment);
         (
           document.querySelector(
-            ".sandwhich-unicode-header-label"
+            ".sandwhich-unicode-header-label",
           ) as HTMLDivElement
         ).textContent = `Unicode Search - ${added}`;
 
@@ -2048,7 +2048,7 @@ import { addCss } from "./css";
 
             default:
               console.warn(
-                `SandwhichMod: Unknown input type "${inputDef.type}"`
+                `SandwhichMod: Unknown input type "${inputDef.type}"`,
               );
               const span = document.createElement("span");
               span.textContent = ` [Unsupported type: ${inputDef.type}]`;

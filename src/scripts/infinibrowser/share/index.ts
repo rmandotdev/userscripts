@@ -18,7 +18,7 @@ import type {
 
   function liToStep(li: HTMLLIElement): ShareStepType {
     const divs = Array.from(
-      li.querySelectorAll<HTMLDivElement>("div.item")
+      li.querySelectorAll<HTMLDivElement>("div.item"),
     ) as [HTMLDivElement, HTMLDivElement, HTMLDivElement];
 
     const step: ShareStepType = [
@@ -47,7 +47,7 @@ import type {
     const shareData = await ib.shareLineage(lineage);
     const optimizeData = await ib.optimizeLineage(shareData.id);
     await navigator.clipboard.writeText(
-      `https://infinibrowser.wiki/item/${optimizeData.id}`
+      `https://infinibrowser.wiki/item/${optimizeData.id}`,
     );
   }
 

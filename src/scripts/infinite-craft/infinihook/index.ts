@@ -23,7 +23,7 @@ import type { LineageType, LineageDataType } from "infinibrowser";
   async function sendMessage(
     webhookUrl: string,
     message: string,
-    alertForSuccess = true
+    alertForSuccess = true,
   ) {
     try {
       const response = await fetch(webhookUrl, {
@@ -112,7 +112,7 @@ ${message}
   function splitIntoSeparateMessage(
     steps: string[],
     maxLength = 2000,
-    joinCharacterLength = 3
+    joinCharacterLength = 3,
   ) {
     const messages: string[][] = [];
     let currentArray: string[] = [];
@@ -210,8 +210,8 @@ ${message}
           `Lineage is too big\nMax: 2000 characters\nLineage: ${
             formattedMessage.length
           } characters\n\nDo you want the lineage to get sent in ${Math.ceil(
-            formattedMessage.length / 2000
-          )} separate messages?`
+            formattedMessage.length / 2000,
+          )} separate messages?`,
         );
         if (sendBigMessage) handleBigLineage(webhook, stepsJson);
       }
