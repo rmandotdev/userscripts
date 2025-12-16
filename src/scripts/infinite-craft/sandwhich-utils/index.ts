@@ -1,3 +1,4 @@
+import type { IC_VUE, ICItemData } from "@infinite-craft/dom-types";
 import { addCss } from "./css";
 
 (function () {
@@ -8,7 +9,6 @@ import { addCss } from "./css";
     window.clearTimeout(saveTimeout);
     saveTimeout = window.setTimeout(() => {
       GM_setValue<Settings>("sandwhich_settings", settings);
-      // console.log("SandwhichMod: Settings saved.");
     }, 500);
   }
 
@@ -202,15 +202,13 @@ import { addCss } from "./css";
       refreshVisualTabButtons: () => void;
       showContextMenu: (
         event: MouseEvent,
-        options: [string, unknown][],
+        options: [string, () => unknown][],
       ) => void;
     };
     unicode: {
-      unicodeData: {
-        [key: string]: [string, string];
-      } | null;
+      unicodeData: Record<string, [string, string]> | null;
       unicodeElements:
-        | ((IC_Container_VUE_CraftApiResponse & ICItemData) | ICItemData)[]
+        | ((IC_VUE.CraftApiResponse & ICItemData) | ICItemData)[]
         | null;
       segmenter: Intl.Segmenter | null;
       recipeModalObserver: unknown;
@@ -230,9 +228,9 @@ import { addCss } from "./css";
       startRecipeModalObserver: () => void;
       stopRecipeModalObserver: () => void;
       fetchUnicodeData: () => void;
-      parseUnicodeData: (unicodeText: string) => {
-        [key: string]: [string, string];
-      };
+      parseUnicodeData: (
+        unicodeText: string,
+      ) => Record<string, [string, string]>;
       isUnicode: (text: string) => boolean;
       updateUnicodeElements: () => void;
       updateUnicodeElementsSort: () => void;
@@ -696,7 +694,7 @@ import { addCss } from "./css";
           }, {}),
         );
         return entries
-          .filter(([key, value]) => value >= minCount)
+          .filter(([, value]) => value >= minCount)
           .sort((a, b) => b[1] - a[1])
           .map(([key]) => key);
       },
@@ -1112,7 +1110,7 @@ import { addCss } from "./css";
 
         document.addEventListener(
           "click",
-          (clickEvent) => (contextMenu.style.display = "none"),
+          () => (contextMenu.style.display = "none"),
           { once: true, capture: true },
         );
       },
@@ -1860,9 +1858,8 @@ import { addCss } from "./css";
           content: () => settings.unicode.infoInRecipeModal,
           handle(elements) {
             settings.unicode.infoInRecipeModal = elements.checked;
-            elements.checked
-              ? mods.unicode.startRecipeModalObserver()
-              : mods.unicode.stopRecipeModalObserver();
+            if (elements.checked) mods.unicode.startRecipeModalObserver();
+            else mods.unicode.stopRecipeModalObserver();
           },
         },
       ],
@@ -1890,7 +1887,7 @@ import { addCss } from "./css";
   }
 
   // --- Observe for Modal Appearance (Define Observer - keep the existing one) ---
-  const modalObserver = new MutationObserver((mutationsList, observer) => {
+  const modalObserver = new MutationObserver((mutationsList) => {
     for (const mutation of mutationsList) {
       if (mutation.type === "childList") {
         mutation.addedNodes.forEach((node) => {

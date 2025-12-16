@@ -2,15 +2,12 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
 
     "rootDir": "./src",
     "outDir": "./dist",
 
-    "baseUrl": ".", // Base directory for resolving non-relative imports
-    "paths": {
-      "build/*": ["./src/build/*"] // Map "build/*" to "./build/*"
-    },
+    "paths": { "build/*": ["./src/build/*"] },
 
     "types": ["@infinite-craft/dom-types", "@violentmonkey/types"],
 

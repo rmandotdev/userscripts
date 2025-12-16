@@ -1,11 +1,7 @@
-import type {
-  IC_Sidebar_VUE,
-  ICItemData,
-  IC_DOM,
-  IC_Container_VUE,
-} from "@infinite-craft/dom-types";
+import type { ICItemData, IC_DOM, IC_VUE } from "@infinite-craft/dom-types";
 
-import { css, closeIconSrc, randomIcon, matchSorter } from "./utils";
+import { css, closeIconSrc, randomIcon } from "./lib/css";
+import { matchSorter } from "./lib/match-sorter";
 
 /*
 ┌────────────────────────────────────────────────────────────────────────────┐
@@ -60,7 +56,7 @@ function debounce<T extends (...args: any[]) => void>(
   };
 }
 
-function initSearchDebounce({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
+function initSearchDebounce({ v_sidebar }: { v_sidebar: IC_VUE.Sidebar }) {
   const oldInput = v_sidebar.$refs.search;
   v_sidebar.$refs.search = oldInput.cloneNode(
     true,
@@ -96,7 +92,7 @@ function initSearchDebounce({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   };
 }
 
-function initSearchRelevancy({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
+function initSearchRelevancy({ v_sidebar }: { v_sidebar: IC_VUE.Sidebar }) {
   const oldSorted = v_sidebar._computedWatchers.sortedElements.getter;
   v_sidebar._computedWatchers.sortedElements.getter = function () {
     return this.searchQuery ? this.items : oldSorted.apply(this);
@@ -180,8 +176,8 @@ function initRecipeLookup({
   v_container,
   v_sidebar,
 }: {
-  v_container: IC_Container_VUE;
-  v_sidebar: IC_Sidebar_VUE;
+  v_container: IC_VUE.Container;
+  v_sidebar: IC_VUE.Sidebar;
 }) {
   const modal = document.createElement("dialog");
   modal.classList.add("recipe-modal");
@@ -285,7 +281,7 @@ function initRecipeLogging() {
 function initPinnedContainer({
   v_container,
 }: {
-  v_container: IC_Container_VUE;
+  v_container: IC_VUE.Container;
 }) {
   const pinnedContainerContainer = document.createElement("div");
   pinnedContainerContainer.classList.add("items-pinned");
@@ -496,7 +492,7 @@ function initOldMouseControls() {
   );
 }
 
-function initSidebarUpdates({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
+function initSidebarUpdates({ v_sidebar }: { v_sidebar: IC_VUE.Sidebar }) {
   const items = document.querySelector(".items");
   Object.defineProperty(v_sidebar.$el, "scrollTop", {
     get() {
@@ -546,7 +542,7 @@ function getRandomCirclePos(center: { x: number; y: number }, radius: number) {
   };
 }
 
-function initRandomButton({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
+function initRandomButton({ v_sidebar }: { v_sidebar: IC_VUE.Sidebar }) {
   const sideControls = document.querySelector(".side-controls"),
     randomButton = document.createElement("img");
   randomButton.classList.add("random", "tool-icon");
@@ -621,7 +617,7 @@ function initRandomButton({ v_sidebar }: { v_sidebar: IC_Sidebar_VUE }) {
   });
 }
 
-function initEvents({ v_container }: { v_container: IC_Container_VUE }) {
+function initEvents({ v_container }: { v_container: IC_VUE.Container }) {
   const switchSave = v_container.switchSave;
   v_container.switchSave = function (id) {
     dispatchEvent(
@@ -668,7 +664,7 @@ function init() {
   }
   if (settings.randomButton > 0) initRandomButton(v);
   if (settings.elementPinning) initPinnedContainer(v);
-  if (settings.oldMouseControls) initOldMouseControls(v);
+  if (settings.oldMouseControls) initOldMouseControls();
   if (settings.disableParticles) {
     const r = window.requestAnimationFrame;
     window.requestAnimationFrame = () => (window.requestAnimationFrame = r);

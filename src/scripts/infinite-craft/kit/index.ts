@@ -1,11 +1,11 @@
-import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-types";
+import type { IC_VUE } from "@infinite-craft/dom-types";
 
 (function () {
   interface ICWindow extends Window {
     convert(input: string): string;
     elementStorageSet: Set<string>;
     revivingProgress(): Promise<void>;
-    emojiMap: Map<string, IC_Container_VUE_CraftApiResponse>;
+    emojiMap: Map<string, IC_VUE.CraftApiResponse>;
     revive(input: string): Promise<void>;
   }
 
@@ -322,7 +322,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
   };
 
   interface DeSpellTech {
-    start: string;
+    start?: string;
     goal?: string;
     tools: string[];
   }
@@ -342,7 +342,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       // convertable quote stuff
       trigger: (elem) => elem.startsWith("“") && elem.endsWith("”"),
       tech: '""',
-      deSpell: (line) => [...tools.quirkyQuote("“”")],
+      deSpell: () => [...tools.quirkyQuote("“”")],
       modifyElement: (elem) => elem.slice(1, -1),
       stopAfter: true,
       disabled: false,
@@ -350,7 +350,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     {
       trigger: (elem) => elem.startsWith("❝") && elem.endsWith("❞"),
       tech: '""',
-      deSpell: (line) => [...tools.quirkyQuote("❝❞")],
+      deSpell: () => [...tools.quirkyQuote("❝❞")],
       modifyElement: (elem) => elem.slice(1, -1),
       stopAfter: true,
       disabled: false,
@@ -358,7 +358,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     {
       trigger: (elem) => elem.startsWith("‘") && elem.endsWith("’"),
       tech: '""',
-      deSpell: (line) => [...tools.quirkyQuote("‘’")],
+      deSpell: () => [...tools.quirkyQuote("‘’")],
       modifyElement: (elem) => elem.slice(1, -1),
       stopAfter: true,
       disabled: false,
@@ -367,7 +367,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       // normal quote stuff
       trigger: (elem) => elem.startsWith('"') && elem.endsWith('"'),
       tech: '""',
-      deSpell: (line) => [],
+      deSpell: () => [],
       modifyElement: (elem) => elem.slice(1, -1),
       stopAfter: true,
       disabled: false,
@@ -375,14 +375,14 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     {
       trigger: (elem) => elem.startsWith("'") && elem.endsWith("'"),
       tech: "''",
-      deSpell: (line) => [],
+      deSpell: () => [],
       modifyElement: (elem) => elem.slice(1, -1),
       disabled: false,
     },
     {
       trigger: (elem) => elem.startsWith("`") && elem.endsWith("`"),
       tech: "``",
-      deSpell: (line) => [],
+      deSpell: () => [],
       modifyElement: (elem) => elem.slice(1, -1),
       disabled: false,
     },
@@ -390,21 +390,21 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       // parentheses
       trigger: (elem) => elem.startsWith("(") && elem.endsWith(")"),
       tech: '""',
-      deSpell: (line) => [...tools.addParentheses("()")],
+      deSpell: () => [...tools.addParentheses("()")],
       modifyElement: (elem) => elem.slice(1, -1),
       disabled: false,
     },
     {
       trigger: (elem) => elem.startsWith("[") && elem.endsWith("]"),
       tech: '""',
-      deSpell: (line) => [...tools.addParentheses("[]")],
+      deSpell: () => [...tools.addParentheses("[]")],
       modifyElement: (elem) => elem.slice(1, -1),
       disabled: false,
     },
     {
       trigger: (elem) => elem.startsWith("{") && elem.endsWith("}"),
       tech: '""',
-      deSpell: (line) => [...tools.addParentheses("{}")],
+      deSpell: () => [...tools.addParentheses("{}")],
       modifyElement: (elem) => elem.slice(1, -1),
       disabled: false,
     },
@@ -434,7 +434,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       // Mr. Element
       trigger: (elem) => elem.startsWith("Mr. "),
       tech: '"hi Mr. "',
-      deSpell: (elem) => [...tools.removeHi],
+      deSpell: () => [...tools.removeHi],
       modifyElement: (elem) => elem.slice(4),
       disabled: false,
     },
@@ -457,7 +457,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
 
     {
       tech: '"hi "',
-      deSpell: (elem) => [...tools.removeHi],
+      deSpell: () => [...tools.removeHi],
       disabled: false,
     },
     {
@@ -482,46 +482,27 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
       tech: '"abcd"',
       deSpell: (elem) => [
         { start: `"abcd${elem}"`, tools: [...tools.removeAbcd] },
-
-        // too many steps... :(
-        // { start: `"abcd${elem}"`, goal: `"bcd${elem}"`,
-        //  tools: [...tools.removeFirstCharacter, ...tools.removeChar('a')] },
-        // { start: `"bcd${elem}"`, goal: `"cd${elem}"`,
-        //  tools: [...tools.removeFirstCharacter, ...tools.removeChar('b')] },
-        // { start: `"cd${elem}"`, goal: `"d${elem}"`,
-        //  tools: [...tools.removeFirstCharacter, ...tools.removeChar('c')] },
-        // { start: `"d${elem}"`, goal: `"${elem}"`,
-        //  tools: [...tools.removeFirstCharacter, ...tools.removeChar('d')] },
       ],
       disabled: false,
     },
     {
       tech: '"the "',
-      deSpell: (elem) => [...tools.removeThe],
+      deSpell: () => [...tools.removeThe],
       disabled: true,
     },
     {
       tech: '"a"',
-      deSpell: (elem) => [
-        ...tools.removeChar("a"),
-        ...tools.removeFirstCharacter,
-      ],
+      deSpell: () => [...tools.removeChar("a"), ...tools.removeFirstCharacter],
       disabled: true,
     },
     {
       tech: '"b"',
-      deSpell: (elem) => [
-        ...tools.removeChar("b"),
-        ...tools.removeFirstCharacter,
-      ],
+      deSpell: () => [...tools.removeChar("b"), ...tools.removeFirstCharacter],
       disabled: true,
     },
     {
       tech: '"0"',
-      deSpell: (elem) => [
-        ...tools.removeChar("0"),
-        ...tools.removeFirstCharacter,
-      ],
+      deSpell: () => [...tools.removeChar("0"), ...tools.removeFirstCharacter],
       disabled: true,
     },
     {
@@ -566,7 +547,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     {
       trigger: (elem) => elem.indexOf("-") === -1, // element doesn't have Hyphens
       tech: '""',
-      deSpell: (elem) => [...tools.removeHyphens],
+      deSpell: () => [...tools.removeHyphens],
       modifyElement: (elem) => elem.replace(/ /g, "-"),
       disabled: true,
     },
@@ -575,7 +556,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
   const recipesIng: Map<string, string> = new Map();
   const recipesRes: Map<string, [string, string][]> = new Map();
   // const aliveSet = new Set();   // elements from results or ingredients of recipes (not implementing because zombies mess this up sometimes :(( )
-  const emojiMap: Map<string, IC_Container_VUE_CraftApiResponse> = new Map();
+  const emojiMap: Map<string, IC_VUE.CraftApiResponse> = new Map();
   const failedSpellingsMap: Map<string, string[]> = new Map();
   let elementStorageSet: Set<string> = new Set();
 
@@ -740,23 +721,25 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
     element: string,
     realElement: string,
   ) {
-    let deSpellSteps = spellTech.deSpell(element);
+    const deSpellSteps: DeSpellTech[] = (() => {
+      const tools = spellTech.deSpell(element);
+
+      if (!tools[0]) {
+        return [];
+      }
+
+      if (((tools): tools is string[] => typeof tools[0] === "string")(tools)) {
+        return [{ tools }];
+      }
+
+      return tools;
+    })();
 
     const currentElement = splice(spellTech.tech, -1, element);
 
-    // if there is no fancy deSpellStep stuff make it fancy
-    if (
-      !deSpellSteps[0] ||
-      !(deSpellSteps[0] as (string & { tools: undefined }) | DeSpellTech).tools
-    ) {
-      deSpellSteps = [{ tools: deSpellSteps }] as DeSpellTech[];
-    }
-
-    for (const deSpellStep of deSpellSteps as DeSpellTech[]) {
-      const start = deSpellStep.start
-        ? (deSpellStep.start as string)
-        : currentElement;
-      const goal = deSpellStep.goal ? (deSpellStep.goal as string) : null;
+    for (const deSpellStep of deSpellSteps) {
+      const start = deSpellStep.start ? deSpellStep.start : currentElement;
+      const goal = deSpellStep.goal ? deSpellStep.goal : null;
 
       if (resultExists(start)) {
         if (logMessages)
@@ -766,7 +749,7 @@ import type { IC_Container_VUE_CraftApiResponse } from "@infinite-craft/dom-type
           ]);
         await tryCombine(
           [start],
-          deSpellStep.tools as string[],
+          deSpellStep.tools,
           [goal, realElement].filter(Boolean),
         );
         addFailedSpelling(realElement, start);

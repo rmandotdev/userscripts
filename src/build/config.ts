@@ -56,6 +56,11 @@ export function inferHeaderFields(
   };
 }
 
+export interface SerializedHeaderOutput {
+  readonly finalConfig: HeaderConfig;
+  readonly serializedHeader: string;
+}
+
 export function serializeHeader(
   config: HeaderConfig,
   opts?: { scriptDir?: string; rootDir?: string },
@@ -84,5 +89,5 @@ export function serializeHeader(
   }
   lines.push("// ==/UserScript==\n");
   const serializedHeader = lines.join("\n");
-  return { finalConfig, serializedHeader };
+  return { finalConfig, serializedHeader } as const;
 }

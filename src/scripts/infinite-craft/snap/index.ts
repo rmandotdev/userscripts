@@ -3,12 +3,11 @@ import type { ICInstanceData } from "@infinite-craft/dom-types";
 const snappingGap = 8;
 const snappingDistance = 16;
 
-function getInstance(element: HTMLElement) {
+function getInstance(element: HTMLElement): ICInstanceData | undefined {
   const regex = /calc\(-50% (. \d+\.?\d*)px\) calc\(-50% (. \d+\.?\d*)px\)/;
   const matches = element.style.translate.match(regex);
-  if (!matches) {
-    return null;
-  }
+  if (!matches) return;
+
   return unsafeWindow.IC.getInstances().find(
     (instance) =>
       instance.x == matches[1].replace(/\s/g, "") &&
@@ -16,7 +15,7 @@ function getInstance(element: HTMLElement) {
   );
 }
 
-function snap(a: ICInstanceData) {
+function snap(a: ICInstanceData): void {
   const aLeft = a.x - a.element.offsetWidth / 4;
   const aRight = aLeft + a.element.offsetWidth / 2;
   const aTop = a.y;
@@ -78,7 +77,7 @@ function snap(a: ICInstanceData) {
   a.element.style.translate = `calc(-50% + ${a.x}px) calc(-50% + ${a.y}px)`;
 }
 
-function observeSnap() {
+function observeSnap(): void {
   const instances = document.querySelector("#instances");
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
@@ -103,7 +102,7 @@ function observeSnap() {
   });
 }
 
-function observePosition(element: HTMLElement) {
+function observePosition(element: HTMLElement): MutationObserver {
   const positionObserver = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.attributeName !== "style") {
@@ -121,7 +120,7 @@ function observePosition(element: HTMLElement) {
   return positionObserver;
 }
 
-function observeDrag() {
+function observeDrag(): void {
   let positionObserver: MutationObserver;
   const instancesTop = document.querySelector("#instances-top");
   const observer = new MutationObserver((mutations) => {

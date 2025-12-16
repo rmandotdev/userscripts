@@ -5,7 +5,11 @@ import * as fs from "node:fs/promises";
 
 import { pathToFileURL, fileURLToPath } from "node:url";
 
-import { serializeHeader, type HeaderConfig } from "./config";
+import {
+  serializeHeader,
+  type HeaderConfig,
+  type SerializedHeaderOutput,
+} from "./config";
 
 const SRC_USERSCRIPTS = fileURLToPath(new URL("../scripts/", import.meta.url));
 const SRC_PUBLIC = fileURLToPath(new URL("../public/", import.meta.url));
@@ -57,13 +61,9 @@ async function copyDir(src: string, dest: string) {
   }
 }
 
-async function buildUserscript(dir: string): Promise<
-  | {
-      finalConfig: HeaderConfig;
-      serializedHeader: string;
-    }
-  | undefined
-> {
+async function buildUserscript(
+  dir: string,
+): Promise<SerializedHeaderOutput | undefined> {
   const configPath = path.join(dir, CONFIG_FILE_NAME);
   const mainTSPath = (await fs.readdir(dir)).find(
     (f) => f.startsWith("index.") && (f.endsWith(".ts") || f.endsWith(".tsx")),
@@ -97,7 +97,7 @@ async function buildUserscript(dir: string): Promise<
     outdir: outDir,
     target: "browser",
     sourcemap: "none",
-    format: "esm",
+    format: "iife",
     minify: false,
     splitting: false,
     naming: { entry: TEMP_MAIN_FILE_NAME },
