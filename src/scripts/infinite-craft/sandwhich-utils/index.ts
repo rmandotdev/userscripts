@@ -2,8 +2,6 @@ import type { IC_VUE, ICItemData } from "@infinite-craft/dom-types";
 import { addCss } from "./css";
 
 (function () {
-  "use strict";
-
   let saveTimeout: number;
   function saveSettings() {
     window.clearTimeout(saveTimeout);
