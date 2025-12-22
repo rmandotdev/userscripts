@@ -251,11 +251,11 @@ import { addCss } from "./css";
     //          |\\____) |_| |___/ |_| |__/ |_| |___/ | \.___.'\  _| |_   _| |_\  \--'  /_| |_\   |_
     //          |_______.'_________|________|_________|\._____.' |_____| |_____|\.____.'|_____|\____|
     selection: {
-      init: function () {
+      init() {
         if (settings.selection.enabled) this.enable();
       },
 
-      enable: function () {
+      enable() {
         settings.selection.enabled = true;
         document
           .querySelector("#select-box")
@@ -263,14 +263,14 @@ import { addCss } from "./css";
         document.body.classList.add("sandwhich-sel-active"); // flag to style elements
         this.update();
       },
-      disable: function () {
+      disable() {
         settings.selection.enabled = false;
         document
           .querySelector("#select-box")
           .classList.remove("sandwhich-select-box");
         document.body.classList.remove("sandwhich-sel-active");
       },
-      update: function () {
+      update() {
         document.documentElement.style.setProperty(
           "--sandwhich-sel-border",
           `${settings.selection.borderWidth}px ${settings.selection.borderStyle} ${settings.selection.customColor}`,
@@ -320,7 +320,7 @@ import { addCss } from "./css";
       ghostElements: new Set(),
       ghostInitialized: false,
 
-      init: function () {
+      init() {
         document.addEventListener("mousemove", (e) => {
           this.mouseData.x = e.clientX;
           this.mouseData.y = e.clientY;
@@ -406,7 +406,7 @@ import { addCss } from "./css";
         });
       },
 
-      spawnInstance: function (element, x, y) {
+      spawnInstance(element, x, y) {
         const item = document
           .querySelector(".container")
           .__vue__.items.find((x) => x.text === element);
@@ -450,18 +450,16 @@ import { addCss } from "./css";
         }
       },
 
-      ghostInit: function () {
+      ghostInit() {
         this.ghostInitialized = true;
-
-        const modsSpawn = this;
 
         const v_container = document.querySelector(".container").__vue__;
         const craftApi = v_container.craftApi;
         v_container.craftApi = async function (...args) {
           let response = await craftApi(...args);
 
-          if (response && modsSpawn.ghostElements.has(response.text)) {
-            modsSpawn.ghostElements.delete(response.text);
+          if (response && mods.spawn.ghostElements.has(response.text)) {
+            mods.spawn.ghostElements.delete(response.text);
             let updateInstances = unsafeWindow.IC.getInstances().filter(
               (x) =>
                 x.disabled === true &&
@@ -476,7 +474,7 @@ import { addCss } from "./css";
                     instance.x,
                     instance.y,
                   );
-                  modsSpawn.spawnInstance(response.text, x, y);
+                  mods.spawn.spawnInstance(response.text, x, y);
                 }
               }, 0);
           }
@@ -485,7 +483,7 @@ import { addCss } from "./css";
         };
       },
 
-      handleClipboardPaste: function (lineage) {
+      handleClipboardPaste(lineage) {
         let coordLessCounter = 0;
 
         let actualColumnDist =
@@ -553,7 +551,7 @@ import { addCss } from "./css";
         }
       },
 
-      handleSpawnFromSelected: function () {
+      handleSpawnFromSelected() {
         const selectedInstances = unsafeWindow.IC.getInstances().filter((x) =>
           x.element.classList.contains("instance-selected"),
         );
@@ -634,7 +632,7 @@ import { addCss } from "./css";
         }
       },
 
-      handleSpawnAlphabet: function (text, x, y) {
+      handleSpawnAlphabet(text, x, y) {
         const choices = [...text].reduce<[string, number][]>(
           (map, char, index) => {
             if (/[a-zA-Z]/.test(char)) map.push([char, index]);
@@ -677,7 +675,7 @@ import { addCss } from "./css";
           alert(`${choiceIndex + 1} was not one of the options :(`);
       },
 
-      getAllAlphabets: function (minCount) {
+      getAllAlphabets(minCount) {
         const entries = Object.entries(
           IC.getItems().reduce<{ [key: string]: number }>((total, x) => {
             const letters = x.text.match(/[a-zA-Z]/g);
@@ -697,7 +695,7 @@ import { addCss } from "./css";
           .map(([key]) => key);
       },
 
-      handleSpawnUnicode: function (text, x, y, rows) {
+      handleSpawnUnicode(text, x, y, rows) {
         if (!rows)
           rows = Number(
             prompt(
@@ -832,11 +830,11 @@ import { addCss } from "./css";
         this.tabData.tabs[this.tabData.currTab]!.elements = elements;
       },
 
-      saveTabData: function () {
+      saveTabData() {
         GM_setValue("tabData", this.tabData);
       },
 
-      addTab: function (index, data) {
+      addTab(index, data) {
         this.updateCurrentTabElements();
         const newTab: TabDataTab = data ?? {
           elements: [],
@@ -1018,7 +1016,7 @@ import { addCss } from "./css";
         tabButton.textContent = name || `Tab ${index + 1}`;
         tabButton.draggable = true;
 
-        tabButton.addEventListener("dragstart", (e) => {
+        tabButton.addEventListener("dragstart", () => {
           this.draggedTabIndex = index;
         });
         tabButton.addEventListener("dragover", (e) => {
@@ -1216,13 +1214,12 @@ import { addCss } from "./css";
           .querySelector(".sidebar-input")
           .addEventListener("input", this.updateSearch.bind(this));
 
-        const modsUnicode = this;
         const v_sidebar = document.querySelector("#sidebar").__vue__;
         const changeSort = v_sidebar.changeSort;
         v_sidebar.changeSort = function (...args) {
           setTimeout(() => {
-            modsUnicode.updateUnicodeElementsSort();
-            modsUnicode.performSearch();
+            mods.unicode.updateUnicodeElementsSort();
+            mods.unicode.performSearch();
           }, 0);
           return changeSort(...args);
         };
@@ -1234,26 +1231,26 @@ import { addCss } from "./css";
 
           if (
             response &&
-            modsUnicode.unicodeElements &&
-            modsUnicode.isUnicode(response.text) &&
-            !modsUnicode.unicodeElements.find(
+            mods.unicode.unicodeElements &&
+            mods.unicode.isUnicode(response.text) &&
+            !mods.unicode.unicodeElements.find(
               ({ text }) => text === response.text,
             )
           ) {
-            modsUnicode.unicodeElements.push(response);
-            modsUnicode.updateUnicodeElementsSort();
-            modsUnicode.performSearch();
+            mods.unicode.unicodeElements.push(response);
+            mods.unicode.updateUnicodeElementsSort();
+            mods.unicode.performSearch();
           }
 
           return response;
         };
       },
 
-      enableCheckbox: function () {
+      enableCheckbox() {
         this.updateUnicodeElements();
       },
 
-      disableCheckbox: function () {
+      disableCheckbox() {
         (
           document.querySelector(
             ".sandwhich-unicode-items-inner",
@@ -1267,7 +1264,7 @@ import { addCss } from "./css";
         this.unicodeElements = null;
       },
 
-      enableSearch: function () {
+      enableSearch() {
         const unicodeContainer = document.createElement("div");
         unicodeContainer.className = "sandwhich-unicode-items";
         const itemContainer = document.createElement("div");
@@ -1308,27 +1305,26 @@ import { addCss } from "./css";
         this.fetchUnicodeData();
         if (unsafeWindow.IC) this.enableCheckbox();
         else {
-          const modsUnicode = this;
           const v_container = document.querySelector(".container").__vue__;
           const addAPI = v_container.addAPI;
-          v_container.addAPI = function () {
+          v_container.addAPI = (...args) => {
             // elements loaded!!!
             setTimeout(() => {
               if (
                 settings.unicode.searchEnabled &&
                 settings.unicode.searchCheckbox
               )
-                modsUnicode.enableCheckbox();
+                mods.unicode.enableCheckbox();
             }, 0);
 
             v_container.addAPI = addAPI;
-            return addAPI.apply(this, arguments);
+            return addAPI.apply(this, ...args);
           };
         }
         settings.unicode.searchEnabled = true;
       },
 
-      disableSearch: function () {
+      disableSearch() {
         (
           document.querySelector(".sandwhich-unicode-items") as HTMLDivElement
         ).remove();
@@ -1336,7 +1332,7 @@ import { addCss } from "./css";
         settings.unicode.searchEnabled = false;
       },
 
-      startRecipeModalObserver: function () {
+      startRecipeModalObserver() {
         if (this.recipeModalObserver) return;
 
         const modalElement = document.querySelector<HTMLDialogElement>(
@@ -1502,7 +1498,7 @@ import { addCss } from "./css";
         return this.itemScopedDataAttribute;
       },
 
-      createItemElement: function (item, wrap = false) {
+      createItemElement(item, wrap = false) {
         const itemDiv = document.createElement("div");
         itemDiv.setAttribute(this.findItemScopedDataAttribute(), "");
         itemDiv.setAttribute("data-item-emoji", item.emoji);
@@ -1531,17 +1527,16 @@ import { addCss } from "./css";
         return itemDiv;
       },
 
-      updateSearch: function () {
+      updateSearch() {
         window.clearTimeout(this.updateSearchTimeoutId);
 
-        const modsUnicode = this;
         this.updateSearchTimeoutId = window.setTimeout(
-          () => modsUnicode.performSearch(),
+          () => this.performSearch(),
           settings.unicode.searchDebounceDelay,
         );
       },
 
-      performSearch: function (amount = settings.unicode.searchAmount) {
+      performSearch(amount = settings.unicode.searchAmount) {
         if (!settings.unicode.searchCheckbox) return;
 
         const searchQuery =
@@ -1614,7 +1609,7 @@ import { addCss } from "./css";
 
   // --- Init Mods ---
   unsafeWindow.addEventListener("load", () => {
-    for (const [name, mod] of Object.entries(mods)) {
+    for (const mod of Object.values(mods)) {
       mod.init();
     }
   });

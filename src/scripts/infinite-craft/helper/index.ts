@@ -47,11 +47,10 @@ function debounce<T extends (...args: any[]) => void>(
   let timeout: NodeJS.Timeout | null = null;
 
   return function (this: unknown, ...args: Parameters<T>) {
-    const context = this;
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => {
       timeout = null;
-      fn.apply(context, args);
+      fn.apply(this, args);
     }, delay);
   };
 }
