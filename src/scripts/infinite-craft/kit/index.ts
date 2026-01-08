@@ -94,17 +94,9 @@ const spellTools = {
       ? [
           ...spellTools.letter2(x), // Everything from 2 letter stuff should also work for 1 letter stuff
           `U+${x.toLowerCase().charCodeAt(0).toString(16).padStart(4, "0")}`,
-          `Append U+${x
-            .toLowerCase()
-            .charCodeAt(0)
-            .toString(16)
-            .padStart(4, "0")}`,
+          `Append U+${x.toLowerCase().charCodeAt(0).toString(16).padStart(4, "0")}`,
           `U+${x.toUpperCase().charCodeAt(0).toString(16).padStart(4, "0")}`,
-          `Append U+${x
-            .toUpperCase()
-            .charCodeAt(0)
-            .toString(16)
-            .padStart(4, "0")}`,
+          `Append U+${x.toUpperCase().charCodeAt(0).toString(16).padStart(4, "0")}`,
           `The '${x}'`,
           `Mr. '${x}'`,
         ]

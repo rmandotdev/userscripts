@@ -442,7 +442,9 @@ import { addCss } from "./css";
           ghostElement.element.addEventListener(
             "mousedown",
             onlyAllowRightClick,
-            { capture: true },
+            {
+              capture: true,
+            },
           );
 
           this.ghostElements.add(element);
@@ -773,9 +775,7 @@ import { addCss } from "./css";
 
         const positionTabBar = function () {
           container.style.left = `200px`;
-          container.style.right = `${
-            sidebar.getBoundingClientRect().width + 150
-          }px`;
+          container.style.right = `${sidebar.getBoundingClientRect().width + 150}px`;
         };
 
         this.cleanupResizeObserver = new ResizeObserver(() => positionTabBar());
@@ -854,9 +854,7 @@ import { addCss } from "./css";
         this.switchTab(newIndex);
 
         const animatedTab = this.getVisualTabFromId(newIndex);
-        animatedTab.style.animation = `slideIn ${
-          settings.tabs.animationSpeed / 50
-        }s ease-out`;
+        animatedTab.style.animation = `slideIn ${settings.tabs.animationSpeed / 50}s ease-out`;
       },
 
       loadTab: function (index) {
@@ -905,9 +903,7 @@ import { addCss } from "./css";
           const sizer = document.createElement("div");
           sizer.className = "sandwhich-tab-sizer";
           sizer.style.width = `${deletedTabWidth}px`;
-          sizer.style.transition = `width ${
-            settings.tabs.animationSpeed / 50
-          }s ease-out`;
+          sizer.style.transition = `width ${settings.tabs.animationSpeed / 50}s ease-out`;
           sizer.addEventListener("transitionend", () => sizer.remove());
           setTimeout(() => (sizer.style.width = "0"), 0);
 

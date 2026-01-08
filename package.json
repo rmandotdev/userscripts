@@ -1,7 +1,7 @@
 {
   "name": "userscripts",
-  "type": "module",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "bun run ./src/build",
     "deploy": "bunx wrangler deploy"

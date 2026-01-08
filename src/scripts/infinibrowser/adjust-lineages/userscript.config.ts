@@ -3,7 +3,12 @@ import { defineConfig } from "build/config";
 export default defineConfig({
   headers: {
     name: "Adjust InfiniBrowser Lineages",
-    match: ["https://infinibrowser.wiki/item*", "https://infinibrowser.wiki/*"],
+    match: [
+      "https://infinibrowser.wiki/item*",
+      "https://infinibrowser.wiki/*",
+      "https://neal.fun/infinite-craft",
+      "https://neal.fun/infinite-craft/",
+    ],
     author: "zeroptr",
     namespace: "zptr.cc",
     version: "0.5.0",
