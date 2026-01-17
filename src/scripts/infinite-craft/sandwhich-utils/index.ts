@@ -442,9 +442,7 @@ import { addCss } from "./css";
           ghostElement.element.addEventListener(
             "mousedown",
             onlyAllowRightClick,
-            {
-              capture: true,
-            },
+            { capture: true },
           );
 
           this.ghostElements.add(element);

@@ -1,4 +1,4 @@
-import { defineConfig } from "build/config";
+import { defineConfig } from "#config";
 
 export default defineConfig({
   headers: {

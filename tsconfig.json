@@ -7,8 +7,6 @@
     "rootDir": "./src",
     "outDir": "./dist",
 
-    "paths": { "build/*": ["./src/build/*"] },
-
     "types": ["@infinite-craft/dom-types", "@violentmonkey/types"],
 
     // Max strictness
