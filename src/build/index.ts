@@ -1,9 +1,8 @@
-import { build } from "bun";
-
-import * as path from "node:path";
 import * as fs from "node:fs/promises";
-
+import * as path from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
+
+import { build } from "bun";
 
 import {
   serializeHeader,
@@ -20,7 +19,7 @@ const CONFIG_FILE_NAME = "userscript.config.ts";
 // Parse CLI args for --verbose flag
 const verbose = process.argv.includes("--verbose");
 
-function logVerbose(...args: any[]) {
+function logVerbose(...args: unknown[]) {
   if (verbose) {
     console.log(...args);
   }

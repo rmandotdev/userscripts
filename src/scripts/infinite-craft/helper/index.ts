@@ -28,25 +28,25 @@ const settings = {
 };
 
 interface Exported {
-  settings: any;
-  createItemElement: any;
-  openRecipeModal: any;
-  pinElements: any;
-  unpinElements: any;
-  resetPinnedElements: any;
-  loadPinnedElements: any;
+  settings: unknown;
+  createItemElement: unknown;
+  openRecipeModal: unknown;
+  pinElements: unknown;
+  unpinElements: unknown;
+  resetPinnedElements: unknown;
+  loadPinnedElements: unknown;
 }
 
 const exported = {} as Exported;
 exported.settings = settings;
 
-function debounce<T extends (...args: any[]) => void>(
-  fn: T,
+function debounce<Targs extends unknown[]>(
+  fn: (...args: Targs) => void,
   delay: number,
-): (...args: Parameters<T>) => void {
+): (...args: Targs) => void {
   let timeout: NodeJS.Timeout | null = null;
 
-  return function (this: unknown, ...args: Parameters<T>) {
+  return function (this: unknown, ...args: Targs) {
     if (timeout) clearTimeout(timeout);
     timeout = setTimeout(() => {
       timeout = null;

@@ -1,4 +1,5 @@
 import type { IC_VUE, ICItemData } from "@infinite-craft/dom-types";
+
 import { addCss } from "./css";
 
 (function () {
@@ -87,7 +88,7 @@ import { addCss } from "./css";
   saveSettings(); // Initial save
 
   function mergeSettings(saved: Settings, defaults: Settings) {
-    for (let k in defaults) {
+    for (const k in defaults) {
       const key = k as keyof Settings;
       if (defaults.hasOwnProperty(key)) {
         if (
@@ -368,7 +369,7 @@ import { addCss } from "./css";
               if (selectedInstances.length <= 1) {
                 copyText = hoveredElement.childNodes[1].textContent!.trim();
               } else {
-                let { x, y } = unsafeWindow.IC.screenToWorld(
+                const { x, y } = unsafeWindow.IC.screenToWorld(
                   this.mouseData.x,
                   this.mouseData.y,
                 );
@@ -456,11 +457,11 @@ import { addCss } from "./css";
         const v_container = document.querySelector(".container").__vue__;
         const craftApi = v_container.craftApi;
         v_container.craftApi = async function (...args) {
-          let response = await craftApi(...args);
+          const response = await craftApi(...args);
 
           if (response && mods.spawn.ghostElements.has(response.text)) {
             mods.spawn.ghostElements.delete(response.text);
-            let updateInstances = unsafeWindow.IC.getInstances().filter(
+            const updateInstances = unsafeWindow.IC.getInstances().filter(
               (x) =>
                 x.disabled === true &&
                 x.itemId === -1 &&
@@ -486,16 +487,16 @@ import { addCss } from "./css";
       handleClipboardPaste(lineage) {
         let coordLessCounter = 0;
 
-        let actualColumnDist =
+        const actualColumnDist =
           settings.spawn.columnDistance * unsafeWindow.IC.getZoom();
-        let actualRowDist =
+        const actualRowDist =
           settings.spawn.rowDistance * unsafeWindow.IC.getZoom();
 
         for (const line of lineage.split(`\n`).filter(Boolean)) {
           let column =
             Math.floor(coordLessCounter / settings.spawn.columnSplit) *
             actualColumnDist;
-          let row =
+          const row =
             (coordLessCounter % settings.spawn.columnSplit) * actualRowDist;
 
           // check if last part is '  number number'
@@ -583,7 +584,7 @@ import { addCss } from "./css";
           }
         } else {
           // no selectedInstance, let user decide
-          let input = prompt(
+          const input = prompt(
             `You didn't have anything selected, so here is a generic menu.\nSelect one:\n a - Spawn Alphabet(s)\n u - Spawn Unicode(s)`,
           );
           if (input?.toLowerCase() === "a") {

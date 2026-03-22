@@ -1,4 +1,4 @@
-import * as path from "path";
+import * as path from "node:path";
 
 type UserscriptVersion =
   | `${0}.${number}`
@@ -28,7 +28,7 @@ export type HeaderConfig = {
 
 const defaultHeader: Partial<HeaderConfig> = {
   namespace: "rman.dev",
-  author: "GameRoMan",
+  author: "gameroman",
   supportURL: "https://rman.dev/discord",
   homepageURL: "https://rman.dev/discord",
   license: "MIT",
