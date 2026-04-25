@@ -1,29 +1,7 @@
 {
+  "extends": "@gameroman/config/ts",
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "moduleResolution": "bundler",
-
-    "rootDir": "./src",
-    "outDir": "./dist",
-
-    "types": ["@infinite-craft/dom-types", "@violentmonkey/types"],
-
-    // Max strictness
-    "strict": true,
-    "skipLibCheck": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true,
-    "verbatimModuleSyntax": true
+    "types": ["bun", "@infinite-craft/dom-types", "@violentmonkey/types"]
   },
-
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }
