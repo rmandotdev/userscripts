@@ -12,7 +12,7 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "infinibrowser": "^0.8.0"
+    "infinibrowser": "^0.9.0"
   },
   "devDependencies": {
     "@gameroman/config": "^0.1.0",
