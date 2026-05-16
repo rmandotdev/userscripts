@@ -12,16 +12,16 @@
     "deploy": "wrangler deploy"
   },
   "dependencies": {
-    "infinibrowser": "^0.8.0"
+    "infinibrowser": "0.9.0"
   },
   "devDependencies": {
-    "@gameroman/config": "^0.1.0",
-    "@infinite-craft/dom-types": "^0.0.3",
-    "@types/bun": "^1.3.13",
-    "@violentmonkey/types": "^0.3.3",
-    "oxfmt": "^0.46.0",
-    "oxlint": "^1.61.0",
-    "typescript": "^6.0.3",
-    "wrangler": "^4.85.0"
+    "@gameroman/config": "0.1.0",
+    "@infinite-craft/dom-types": "0.0.4",
+    "@types/bun": "1.3.14",
+    "@violentmonkey/types": "0.3.3",
+    "oxfmt": "0.49.0",
+    "oxlint": "1.64.0",
+    "typescript": "6.0.3",
+    "wrangler": "4.90.1"
   }
 }

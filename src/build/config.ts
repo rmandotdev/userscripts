@@ -66,7 +66,7 @@ export function serializeHeader(
   opts?: { scriptDir?: string; rootDir?: string },
 ): { finalConfig: HeaderConfig; serializedHeader: string } {
   const inferred =
-    opts?.scriptDir && opts?.rootDir
+    opts?.scriptDir && opts.rootDir
       ? inferHeaderFields(opts.scriptDir, opts.rootDir)
       : {};
 
