@@ -22,9 +22,6 @@
     "oxfmt": "0.53.0",
     "oxlint": "1.68.0",
     "typescript": "6.0.3",
-    "wrangler": "4.95.0"
-  },
-  "overrides": {
-    "rosie-skills": "npm:@gameroman/empty@0.0.0"
+    "wrangler": "4.98.0"
   }
 }
