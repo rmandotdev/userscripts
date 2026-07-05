@@ -229,7 +229,7 @@ function initRecipeLookup({
         recipe.classList.add("recipe");
         const [itemA, itemB] = r.map((id) => idMap.get(id));
         if (!itemA || !itemB) {
-          console.warn("Invalid recipe for " + item.text, r);
+          console.warn(`Invalid recipe for ${item.text}`, r);
           continue;
         }
         recipe.append(
@@ -291,11 +291,11 @@ function initPinnedContainer({
   resizeHandle.classList.add("resize-handle-vertical");
 
   const saveContainerHeight = debounce(function (v: number) {
-    return localStorage.setItem("pinned-container-height", v);
+    return localStorage.setItem("pinned-container-height", `${v}`);
   }, 50);
 
   const savedHeight = localStorage.getItem("pinned-container-height");
-  if (savedHeight) pinnedContainer.style.height = savedHeight + "px";
+  if (savedHeight) pinnedContainer.style.height = `${savedHeight}px`;
 
   let resizing = false,
     startY = 0,
@@ -305,7 +305,7 @@ function initPinnedContainer({
     if (!resizing) return;
     const newHeight = startHeight + e.clientY - startY;
     saveContainerHeight(newHeight);
-    pinnedContainer.style.height = newHeight + "px";
+    pinnedContainer.style.height = `${newHeight}px`;
   }
 
   resizeHandle.addEventListener("mousedown", function (e) {
