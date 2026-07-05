@@ -299,10 +299,10 @@ const tools = {
       ["Left", "Opening", null],
       ["Parenthesis", "Parentheses", "Bracket", "Braces"],
     ),
-    "Prepend " + splice(parent, -1, "parenthesis"),
-    "Prepend " + splice(parent, -1, "parentheses"),
-    "Append " + splice(parent, -1, "parenthesis"),
-    "Append " + splice(parent, -1, "parentheses"),
+    `Prepend ${splice(parent, -1, "parenthesis")}`,
+    `Prepend ${splice(parent, -1, "parentheses")}`,
+    `Append ${splice(parent, -1, "parenthesis")}`,
+    `Append ${splice(parent, -1, "parentheses")}`,
     splice(parent, -1, " "),
     splice(parent, -1, "parenthesis"),
     splice(parent, -1, "put This In Parenthesis"),
@@ -412,8 +412,8 @@ const spellTechs: SpellTech[] = [
     tech: '""',
     deSpell: (elem) => [
       ...tools.prependAt,
-      "@" + elem.slice(0, 1),
-      "@" + elem.slice(0, 2),
+      `@${elem.slice(0, 1)}`,
+      `@${elem.slice(0, 2)}`,
     ],
     modifyElement: (elem) => elem.slice(1),
     disabled: false,
@@ -794,11 +794,10 @@ function makeLineage(
       !visited.has(first) &&
       !visited.has(second)
     ) {
-      return (
-        makeLineage(first, visited) +
-        makeLineage(second, visited) +
-        `\n${first} + ${second} = ${element}`
-      );
+      return `${makeLineage(first, visited)}${makeLineage(
+        second,
+        visited,
+      )}\n${first} + ${second} = ${element}`;
     }
   }
   return "";

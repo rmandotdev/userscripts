@@ -1085,8 +1085,7 @@ import { addCss } from "./css";
 
         for (const [name, func] of options) {
           const contextmenuOption = document.createElement("div");
-          contextmenuOption.className =
-            "sandwhich-tab-contextmenu-option " + name.toLowerCase();
+          contextmenuOption.className = `sandwhich-tab-contextmenu-option ${name.toLowerCase()}`;
           contextmenuOption.textContent = name;
           contextmenuOption.onclick = () => {
             func.call(this);
