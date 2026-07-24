@@ -21,7 +21,7 @@
     "@violentmonkey/types": "0.3.4",
     "oxfmt": "0.60.0",
     "oxlint": "1.75.0",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "wrangler": "4.110.0"
   }
 }
