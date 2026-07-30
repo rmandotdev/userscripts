@@ -2,7 +2,7 @@
   "$schema": "node_modules/wrangler/config-schema.json",
 
   "name": "userscripts",
-  "compatibility_date": "2026-03-12",
+  "compatibility_date": "2026-07-22",
 
   "assets": {
     "directory": "./dist",
