@@ -919,7 +919,7 @@ function addElementToStorage(elementText: string) {
     !elementText ||
     !emojiMap.has(elementText) ||
     elementStorageSet.has(elementText) ||
-    icWindow.IC.getItems().filter((e) => e.text === elementText).length !== 0 // == Patched by GameRoMan ==
+    icWindow.IC.getItems().some((e) => e.text === elementText) // == Patched by GameRoMan ==
   ) {
     return;
   }

@@ -115,7 +115,7 @@ function initSearchRelevancy({ v_sidebar }: { v_sidebar: IC_VUE.Sidebar }) {
       elements = this.filteredElements,
       results: ICItemData[] = [];
 
-    for (let i = elements.length; i--; ) {
+    for (let i = elements.length; i--;) {
       const e = elements[i]!;
       if (e.text.toLowerCase().indexOf(lowerQuery) > -1) results.push(e);
     }
@@ -571,7 +571,7 @@ function initRandomButton({ v_sidebar }: { v_sidebar: IC_VUE.Sidebar }) {
       const filtered = items.filter((x) => !x.hide && x.text.length < 31);
       return choose(filtered.length > 0 ? filtered : items);
     } else {
-      for (let i = 100; i--; ) {
+      for (let i = 100; i--;) {
         const choice = choose(items);
         if (!choice.hide && choice.text.length < 31) return choice;
       }
