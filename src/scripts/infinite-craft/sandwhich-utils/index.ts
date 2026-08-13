@@ -743,11 +743,11 @@ import { addCss } from "./css";
 
       cleanupResizeObserver: null,
 
-      init: function () {
+      init() {
         if (settings.tabs.enabled) this.enable();
       },
 
-      enable: function () {
+      enable() {
         const infiniteCraftContainer =
           document.querySelector(".infinite-craft");
 
@@ -793,7 +793,7 @@ import { addCss } from "./css";
         settings.tabs.enabled = true;
       },
 
-      disable: function () {
+      disable() {
         const container = document.getElementById("sandwhich-tab-container");
         if (container) container.remove();
 
@@ -810,14 +810,14 @@ import { addCss } from "./css";
         settings.tabs.enabled = false;
       },
 
-      updateColors: function () {
+      updateColors() {
         document.documentElement.style.setProperty(
           "--sandwhich-tab-color",
           settings.tabs.customColor,
         );
       },
 
-      updateCurrentTabElements: function () {
+      updateCurrentTabElements() {
         const elements: TabDataElement[] =
           unsafeWindow.IC.getInstances().map<TabDataElement>((instance) => {
             const { x, y } = unsafeWindow.IC.worldToScreen(
@@ -856,7 +856,7 @@ import { addCss } from "./css";
         animatedTab.style.animation = `slideIn ${settings.tabs.animationSpeed / 50}s ease-out`;
       },
 
-      loadTab: function (index) {
+      loadTab(index) {
         if (index >= this.tabData.tabs.length) index = 0;
         const tab = this.tabData.tabs[index]!;
 
@@ -869,7 +869,7 @@ import { addCss } from "./css";
         this.tabData.currTab = index;
       },
 
-      switchTab: function (index) {
+      switchTab(index) {
         this.updateCurrentTabElements();
         if (this.tabData.currTab == index) return;
 
@@ -882,7 +882,7 @@ import { addCss } from "./css";
         this.saveTabData();
       },
 
-      deleteTab: function (index) {
+      deleteTab(index) {
         if (this.tabData.tabs.length <= 1) {
           unsafeWindow.IC.clearInstances();
           this.tabData.tabs = this.defaultTabData.tabs;
@@ -919,7 +919,7 @@ import { addCss } from "./css";
         this.saveTabData();
       },
 
-      duplicateTab: function (index) {
+      duplicateTab(index) {
         this.switchTab(index);
         const toDuplicateTab = this.tabData.tabs[index]!;
         this.addTab(index + 1, {
@@ -930,7 +930,7 @@ import { addCss } from "./css";
         this.saveTabData();
       },
 
-      renameTab: function (index) {
+      renameTab(index) {
         const newName = prompt(
           `Enter a new name! (${this.tabData.tabs[index]!.name})`,
         );
@@ -941,7 +941,7 @@ import { addCss } from "./css";
         this.saveTabData();
       },
 
-      downloadTab: function (index) {
+      downloadTab(index) {
         this.updateCurrentTabElements();
 
         const tab = this.tabData.tabs[index]!;
@@ -957,7 +957,7 @@ import { addCss } from "./css";
         a.remove();
       },
 
-      uploadTab: function () {
+      uploadTab() {
         const input = document.createElement("input");
         input.type = "file";
         input.accept = ".json,application/json";
@@ -999,7 +999,7 @@ import { addCss } from "./css";
           `.sandwhich-tab[data-tab-id="${index}"]`,
         ) as HTMLButtonElement,
 
-      createVisualTabButton: function (index, name) {
+      createVisualTabButton(index, name) {
         const tabList = document.querySelector(
           "#sandwhich-tab-list",
         ) as HTMLDivElement;
@@ -1066,7 +1066,7 @@ import { addCss } from "./css";
         tabList.insertBefore(tabButton, referenceNode);
       },
 
-      refreshVisualTabButtons: function () {
+      refreshVisualTabButtons() {
         const tabList = document.querySelector(
           "#sandwhich-tab-list",
         ) as HTMLDivElement;
@@ -1077,7 +1077,7 @@ import { addCss } from "./css";
         );
       },
 
-      showContextMenu: function (event, options) {
+      showContextMenu(event, options) {
         const contextMenu = document.querySelector(
           "#sandwhich-tab-contextmenu",
         ) as HTMLDivElement;
@@ -1121,27 +1121,27 @@ import { addCss } from "./css";
       searchDiscoveries: false,
 
       nealSortFunctions: {
-        time: function (a, b) {
+        time(a, b) {
           return a.id - b.id;
         },
         // modified for unicode
-        name: function (a, b) {
+        name(a, b) {
           return (
             a.text.codePointAt(0) - b.text.codePointAt(0) ||
             a.text.localeCompare(b.text)
           );
         },
         // fixed
-        emoji: function (a, b) {
+        emoji(a, b) {
           return (a?.emoji ?? "").localeCompare(b?.emoji ?? "");
         },
-        new: function (a, b) {
+        new(a, b) {
           return b.id - a.id;
         },
-        length: function (a, b) {
+        length(a, b) {
           return a.text.length - b.text.length;
         },
-        random: function () {
+        random() {
           return Math.random() - 0.5;
         },
       },
@@ -1179,7 +1179,7 @@ import { addCss } from "./css";
         Zs: "Separator, Space",
       },
 
-      init: function () {
+      init() {
         if (typeof Intl === "object" && Intl.Segmenter) {
           this.segmenter = new Intl.Segmenter(undefined, {
             granularity: "grapheme",
@@ -1227,7 +1227,7 @@ import { addCss } from "./css";
             response &&
             mods.unicode.unicodeElements &&
             mods.unicode.isUnicode(response.text) &&
-            !mods.unicode.unicodeElements.find(
+            !mods.unicode.unicodeElements.some(
               ({ text }) => text === response.text,
             )
           ) {
@@ -1386,12 +1386,12 @@ import { addCss } from "./css";
         this.fetchUnicodeData();
       },
 
-      stopRecipeModalObserver: function () {
+      stopRecipeModalObserver() {
         document.querySelector(".recipe-modal-subtitle").remove();
         document.removeEventListener("mouseup", this.rightClickUpListener!);
       },
 
-      fetchUnicodeData: function () {
+      fetchUnicodeData() {
         if (this.unicodeData) return;
 
         GM.xmlHttpRequest({
@@ -1413,7 +1413,7 @@ import { addCss } from "./css";
         });
       },
 
-      parseUnicodeData: function (unicodeText) {
+      parseUnicodeData(unicodeText) {
         return unicodeText
           .trim()
           .split("\n")
@@ -1428,7 +1428,7 @@ import { addCss } from "./css";
           }, {});
       },
 
-      isUnicode: function (text) {
+      isUnicode(text) {
         if (!settings.unicode.searchMultiCharacter || !this.segmenter) {
           const utf16Length = text.length;
 
@@ -1448,7 +1448,7 @@ import { addCss } from "./css";
           );
       },
 
-      updateUnicodeElements: function () {
+      updateUnicodeElements() {
         if (!settings.unicode.searchCheckbox) return;
 
         console.time("updateUnicodeElements");
@@ -1460,7 +1460,7 @@ import { addCss } from "./css";
         console.timeEnd("updateUnicodeElements");
       },
 
-      updateUnicodeElementsSort: function () {
+      updateUnicodeElementsSort() {
         if (!settings.unicode.searchCheckbox) return;
 
         const v_sidebar = document.querySelector("#sidebar").__vue__;
@@ -1473,7 +1473,7 @@ import { addCss } from "./css";
         }
       },
 
-      findItemScopedDataAttribute: function () {
+      findItemScopedDataAttribute() {
         if (!this.itemScopedDataAttribute) {
           const sampleItem = document.querySelector(".item");
           if (!sampleItem) {
