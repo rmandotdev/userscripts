@@ -187,7 +187,7 @@ function initRecipeLookup({
   const closeIcon = document.createElement("img");
   closeIcon.src = closeIconSrc;
   closeButton.appendChild(closeIcon);
-  closeButton.addEventListener("click", (_) => modal.close());
+  closeButton.addEventListener("click", () => modal.close());
   const modalHeader = document.createElement("div");
   modalHeader.classList.add("recipe-modal-header");
   modalHeader.append(modalTitle, closeButton);

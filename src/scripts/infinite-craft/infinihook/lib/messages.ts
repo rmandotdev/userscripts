@@ -4,6 +4,7 @@ async function sendMessage(
   webhookUrl: string,
   message: string,
   alertForSuccess = true,
+  alertForError = false,
 ) {
   try {
     const response = await fetch(webhookUrl, {
@@ -13,8 +14,10 @@ async function sendMessage(
     });
 
     if (!response.ok) {
+      if (alertForError) {
+        alert("Something went wrong, check Console for more information");
+      }
       throw new Error(`HTTP error! status: ${response.status}`);
-      alert("Something went wrong, check Console for more information");
     } else {
       if (alertForSuccess) alert("Lineage successfully sent to your webhook");
       return true;
@@ -113,7 +116,7 @@ function splitIntoSeparateMessage(
   return messages;
 }
 
-function getFormattedMessage(stepsJson: LineageType) {
+function getFormattedMessage(stepsJson: LineageType): string {
   const steps = convertToSteps(stepsJson);
   const message = convertToMessage(steps);
   const messageWithLengthCount = addStepCount(message, steps);
