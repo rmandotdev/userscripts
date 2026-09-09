@@ -17,7 +17,7 @@
   "devDependencies": {
     "@gameroman/config": "0.2.9",
     "@infinite-craft/dom-types": "0.0.4",
-    "@types/bun": "1.4.1",
+    "@types/bun": "1.4.2",
     "@violentmonkey/types": "0.3.4",
     "oxfmt": "0.67.0",
     "oxlint": "1.82.0",
