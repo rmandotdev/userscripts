@@ -15,7 +15,7 @@
     "infinibrowser": "0.9.1"
   },
   "devDependencies": {
-    "@gameroman/config": "0.2.9",
+    "@gameroman/config": "0.3.0",
     "@infinite-craft/dom-types": "0.0.4",
     "@types/bun": "1.4.2",
     "@violentmonkey/types": "0.3.4",
