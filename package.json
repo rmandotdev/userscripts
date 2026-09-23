@@ -19,8 +19,8 @@
     "@infinite-craft/dom-types": "0.0.4",
     "@types/bun": "1.4.2",
     "@violentmonkey/types": "0.3.4",
-    "oxfmt": "0.67.0",
-    "oxlint": "1.82.0",
+    "oxfmt": "0.70.0",
+    "oxlint": "1.85.0",
     "typescript": "7.0.2",
     "wrangler": "4.131.1"
   }
