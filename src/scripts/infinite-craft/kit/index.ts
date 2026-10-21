@@ -631,7 +631,7 @@ async function chunkRevive(
       currentWordEnd =
         i +
         1 +
-        (element + " ")
+        `${element} `
           .slice(i + 1)
           .split("")
           .findIndex((x) => spacingChars.has(x));
