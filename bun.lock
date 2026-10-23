@@ -5,7 +5,7 @@
     "": {
       "name": "userscripts",
       "dependencies": {
-        "infinibrowser": "0.9.1",
+        "infinibrowser": "0.9.2",
       },
       "devDependencies": {
         "@gameroman/config": "0.3.0",
@@ -300,7 +300,7 @@
 
     "fsevents": ["fsevents@2.3.3", "", { "os": "darwin" }, "sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw=="],
 
-    "infinibrowser": ["infinibrowser@0.9.1", "", {}, "sha512-DB7K0UJsY3bjYSsZGtEPfRxrrWwL+EQUaSr/N+zB9XkEHpNQ1CwxlDXMYKUy307FZYvR2NfRdFXKYx0JL6uaZw=="],
+    "infinibrowser": ["infinibrowser@0.9.2", "", {}, "sha512-i1ktqBtsn3yscSd3+kDol3i/mqpvAv5n+JXAsWZu5lsoYKh8JQjAM0KrcoyPzrTtzBtLUkVnKMEpmv+h7FGmeA=="],
 
     "kleur": ["kleur@4.1.5", "", {}, "sha512-o+NO+8WrRiQEE4/7nwRJhN1HWpVmJm511pBHUxPLtp0BUISzlBplORYSmTclCnJvQq2tKu/sgl3xVpkc7ZWuQQ=="],
 
