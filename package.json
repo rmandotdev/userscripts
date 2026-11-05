@@ -18,7 +18,7 @@
     "@gameroman/config": "0.3.0",
     "@infinite-craft/dom-types": "0.0.4",
     "@types/bun": "1.4.4",
-    "@violentmonkey/types": "0.3.4",
+    "@violentmonkey/types": "0.3.5",
     "oxfmt": "0.75.0",
     "oxlint": "1.90.0",
     "typescript": "7.0.2",
